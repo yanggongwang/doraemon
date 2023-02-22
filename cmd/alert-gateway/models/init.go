@@ -20,18 +20,16 @@ func init() {
 		new(Alerts),
 		new(Receivers),
 		new(Groups),
-		new(Hosts),
-		new(Maintains),
 		new(Manages),
 		new(Configs),
 		new(Users),
-		//new(Labels),
-		//new(RuleLabels),
-		//new(Expressions),
-		new(Inhibits),
 		new(InhibitLog),
+		new(InhibitRule),
+		new(SourceMatcher),
+		new(TargetMatcher),
+		new(Silence),
+		new(SilenceMatcher),
 	)
-
 }
 
 // singleton init ormer ,only use for normal db operation

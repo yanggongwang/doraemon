@@ -59,7 +59,7 @@ func init() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
-	beego.InsertFilter("/api/v1/*", beego.BeforeRouter, FilterUser)
+	// beego.InsertFilter("/api/v1/*", beego.BeforeRouter, FilterUser)
 
 	ns := beego.NewNamespace("/api/v1",
 		beego.NSNamespace("/login",
@@ -107,11 +107,6 @@ func init() {
 				&controllers.PromController{},
 			),
 		),
-		beego.NSNamespace("/maintains",
-			beego.NSInclude(
-				&controllers.MaintainController{},
-			),
-		),
 		beego.NSNamespace("/manages",
 			beego.NSInclude(
 				&controllers.ManageController{},
@@ -122,11 +117,16 @@ func init() {
 				&controllers.ConfigController{},
 			),
 		),
-		//beego.NSNamespace("/labels",
-		//	beego.NSInclude(
-		//		&controllers.LabelController{},
-		//	),
-		//),
+		beego.NSNamespace("/inhibits",
+			beego.NSInclude(
+				&controllers.InhibitsController{},
+			),
+		),
+		beego.NSNamespace("/sliences",
+			beego.NSInclude(
+				&controllers.SilenceController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

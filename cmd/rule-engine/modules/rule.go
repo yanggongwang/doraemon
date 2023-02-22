@@ -26,6 +26,7 @@ type Rule struct {
 	Expr        string            `json:"expr"`
 	Op          string            `json:"op"`
 	Value       string            `json:"value"`
+	Alert       string            `json:"alert"`
 	For         string            `json:"for"`
 	Labels      map[string]string `json:"labels"`
 	Summary     string            `json:"summary"`
@@ -60,7 +61,8 @@ func (r Rules) Content() ([]byte, error) {
 	rules := S{}
 	for _, i := range r {
 		rules = append(rules, M{
-			"alert":  strconv.FormatInt(i.ID, 10),
+			// "alert":  strconv.FormatInt(i.ID, 10),
+			"alert":  i.Alert,
 			"expr":   strings.Join([]string{i.Expr, i.Op, i.Value}, " "),
 			"for":    i.For,
 			"labels": i.Labels,

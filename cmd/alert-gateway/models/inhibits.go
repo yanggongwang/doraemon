@@ -1,71 +1,327 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/astaxie/beego/orm"
 	"github.com/pkg/errors"
+	"github.com/prometheus/alertmanager/config"
+	"github.com/prometheus/alertmanager/pkg/labels"
+	"github.com/prometheus/common/model"
 
 	"doraemon/cmd/alert-gateway/logs"
 )
 
-type Inhibits struct {
-	Id                          int64  `orm:"column(id);auto" json:"id,omitempty"`
-	Name                        string `orm:"column(name);size(255)" json:"name"`
-	SourceExpression            string `orm:"column(source_expression);size(1023)" json:"source_expression"`
-	SourceReversePolishNotation string `orm:"column(source_reverse_polish_notation);size(1023)" json:"source_reverse_polish_notation"`
-	Targetxpression             string `orm:"column(target_expression);size(1023)" json:"target_expression"`
-	TargetReversePolishNotation string `orm:"column(target_reverse_polish_notation);size(1023)" json:"target_reverse_polish_notation"`
-	Labels                      string `orm:"column(labels);size(1023)" json:"labels"`
+type SourceMatcher struct {
+	Id          int64        `orm:"column(id);auto" json:"id,omitempty"`
+	InhibitRule *InhibitRule `orm:"column(inhibit_rule);rel(fk)" json:"inhibit_rule,omitempty"`
+	// MatchEqual = 0
+	// MatchNotEqual = 1
+	// MatchRegexp = 2
+	// MatchNotRegexp = 3
+	ExpressionType int    `orm:"column(expression_type);size(255)" json:"expression_type"`
+	LabelName      string `orm:"column(label_name);size(255)" json:"label_name"`
+	Expression     string `orm:"column(expression);size(255)" json:"expression"`
 }
 
-type ShowInhibits struct {
-	Inhibits []Inhibits `json:"rows"`
-	Total    int64      `json:"total"`
+func (*SourceMatcher) TableName() string {
+	return "inhibit_rule_source_matcher"
 }
 
-func (*Inhibits) TableName() string {
-	return "inhibits"
+type TargetMatcher struct {
+	Id          int64        `orm:"column(id);auto" json:"id,omitempty"`
+	InhibitRule *InhibitRule `orm:"column(inhibit_rule);rel(fk)" json:"inhibit_rule,omitempty"`
+	// MatchEqual = 0
+	// MatchNotEqual = 1
+	// MatchRegexp = 2
+	// MatchNotRegexp = 3
+	ExpressionType int    `orm:"column(expression_type);size(255)" json:"expression_type"`
+	LabelName      string `orm:"column(label_name);size(255)" json:"label_name"`
+	Expression     string `orm:"column(expression);size(255)" json:"expression"`
 }
 
-func (inhibits *Inhibits) DeleteInhibit(id int64) error {
-	if _, err := orm.NewOrm().Delete(&Inhibits{Id: id}); err != nil {
+func (*TargetMatcher) TableName() string {
+	return "inhibit_rule_target_matcher"
+}
+
+type InhibitRule struct {
+	Id             int64            `orm:"column(id);auto" json:"id,omitempty"`
+	Name           string           `orm:"column(name);size(255)" json:"name"`
+	SourceMatchers []*SourceMatcher `orm:"reverse(many)" json:"source_matchers"`
+	TargetMatchers []*TargetMatcher `orm:"reverse(many)" json:"target_matchers"`
+	Equal          string           `orm:"column(equal);size(255)" json:"equal"`
+}
+
+func (*InhibitRule) TableName() string {
+	return "inhibit_rule"
+}
+
+// InsertInhibitRule insert inhibitRule and sourceMatchers and targetMatchers
+func (inhibitRule *InhibitRule) InsertInhibitRule() error {
+	o := orm.NewOrm()
+	id, err := o.Insert(inhibitRule)
+	if err != nil {
+		logs.Error("Insert inhibitRule error:%v", err)
+		return errors.Wrap(err, "database insert error")
+	}
+	inhibitRule.Id = id
+
+	for _, sourceMatcher := range inhibitRule.SourceMatchers {
+		sourceMatcher.InhibitRule = inhibitRule
+		_, err = o.Insert(sourceMatcher)
+		if err != nil {
+			logs.Error("Insert sourceMatcher error:%v", err)
+			return errors.Wrap(err, "database insert error")
+		}
+	}
+
+	for _, targetMatcher := range inhibitRule.TargetMatchers {
+		targetMatcher.InhibitRule = inhibitRule
+		_, err = o.Insert(targetMatcher)
+		if err != nil {
+			logs.Error("Insert targetMatcher error:%v", err)
+			return errors.Wrap(err, "database insert error")
+		}
+	}
+
+	return nil
+}
+
+// Delete InhibitRule, Use Transaction, First delete matchers and targetMatchers, then delete InhibitRule
+func (inhibitRule *InhibitRule) DeleteInhibitRule(id int64) error {
+	o := orm.NewOrm()
+	err := o.Begin()
+	// If there is an error, rollback and return error
+	defer func() {
+		if err != nil {
+			err = o.Rollback()
+			if err != nil {
+				logs.Error("Rollback transaction error:%v", err)
+			}
+		}
+	}()
+
+	if err != nil {
+		logs.Error("Begin transaction error:%v", err)
+		return errors.Wrap(err, "database delete error")
+	}
+
+	// Delete matchers
+	_, err = o.QueryTable(new(SourceMatcher)).Filter("inhibit_rule__id", id).Delete()
+	if err != nil {
+		logs.Error("Delete matchers error:%v", err)
+		return errors.Wrap(err, "database delete error")
+	}
+	_, err = o.QueryTable(new(TargetMatcher)).Filter("inhibit_rule__id", id).Delete()
+	if err != nil {
+		logs.Error("Delete targetMatchers error:%v", err)
+		return errors.Wrap(err, "database delete error")
+	}
+
+	// Delete InhibitRule
+	if _, err := o.Delete(&InhibitRule{Id: id}); err != nil {
+		return errors.Wrap(err, "database delete error")
+	}
+	err = o.Commit()
+	if err != nil {
+		logs.Error("Commit transaction error:%v", err)
 		return errors.Wrap(err, "database delete error")
 	}
 	return errors.Wrap(nil, "success")
 }
 
-func (inhibits *Inhibits) UpdateInhibit() error {
-	o := orm.NewOrm()
-	_, err := o.Update(inhibits)
+// Get All InhibitRules
+func GetAllInhibitRules() []InhibitRule {
+	var inhibitRules []InhibitRule
+	o := Ormer()
+	_, err := o.QueryTable(new(InhibitRule)).All(&inhibitRules)
 	if err != nil {
-		logs.Error("update inhibits error:%v", err)
-		return errors.Wrap(err, "database update error")
+		logs.Error("Get all inhibitRules error:%v", err)
+		return nil
 	}
-	return errors.Wrap(err, "database insert error")
-}
-
-func (inhibits *Inhibits) InsertInhibit() error {
-	o := orm.NewOrm()
-	_, err := o.Insert(inhibits)
-	if err != nil {
-		logs.Error("Insert inhibits error:%v", err)
-		return errors.Wrap(err, "database insert error")
+	var res []InhibitRule
+	for _, rule := range inhibitRules {
+		var sourceMatcher []*SourceMatcher
+		var targetMatcher []*TargetMatcher
+		_, err = o.QueryTable(new(SourceMatcher)).Filter("inhibit_rule__id", rule.Id).All(&sourceMatcher)
+		if err != nil {
+			logs.Error("Get matchers error:%v", err)
+			return nil
+		}
+		_, err = o.QueryTable(new(TargetMatcher)).Filter("inhibit_rule__id", rule.Id).All(&targetMatcher)
+		if err != nil {
+			logs.Error("Get matchers error:%v", err)
+			return nil
+		}
+		rule.SourceMatchers = sourceMatcher
+		rule.TargetMatchers = targetMatcher
+		res = append(res, rule)
 	}
-	return errors.Wrap(err, "database insert error")
+	return res
 }
 
-func (*Inhibits) Get(id int64) Inhibits {
-	var inhibit Inhibits
-	Ormer().QueryTable(new(Inhibits)).Filter("id__eq", id).One(&inhibit)
-	return inhibit
+type ShowInhibitRules struct {
+	InhibitRules []*InhibitRuleResp `json:"rows"`
+	Total        int64              `json:"total"`
 }
 
-func (*Inhibits) GetInhibits(pageNo int64, pageSize int64) ShowInhibits {
-	var showInhibits ShowInhibits
-	qs := Ormer().QueryTable(new(Inhibits))
+type MatcherResp struct {
+	Id             int64  `orm:"column(id);auto" json:"id"`
+	ExpressionType int    `orm:"column(expression_type);size(255)" json:"expression_type"`
+	LabelName      string `orm:"column(label_name);size(255)" json:"label_name"`
+	Expression     string `orm:"column(expression);size(255)" json:"expression"`
+}
+
+type InhibitRuleResp struct {
+	Id             int64          `orm:"column(id);auto" json:"id"`
+	Name           string         `orm:"column(name);size(255)" json:"name"`
+	SourceMatchers []*MatcherResp `orm:"reverse(many)" json:"source_matchers"`
+	TargetMatchers []*MatcherResp `orm:"reverse(many)" json:"target_matchers"`
+	Equal          string         `orm:"column(equal);size(255)" json:"equal"`
+}
+
+func (sourceMatcher *SourceMatcher) ToResp() *MatcherResp {
+	return &MatcherResp{
+		Id:             sourceMatcher.Id,
+		ExpressionType: sourceMatcher.ExpressionType,
+		LabelName:      sourceMatcher.LabelName,
+		Expression:     sourceMatcher.Expression,
+	}
+}
+
+func (targetMatcher *TargetMatcher) ToResp() *MatcherResp {
+	return &MatcherResp{
+		Id:             targetMatcher.Id,
+		ExpressionType: targetMatcher.ExpressionType,
+		LabelName:      targetMatcher.LabelName,
+		Expression:     targetMatcher.Expression,
+	}
+}
+
+func (inhibitRule *InhibitRule) ToResp() *InhibitRuleResp {
+	var sourceMatchers []*MatcherResp
+	var targetMatchers []*MatcherResp
+	for _, sourceMatcher := range inhibitRule.SourceMatchers {
+		sourceMatchers = append(sourceMatchers, sourceMatcher.ToResp())
+	}
+	for _, targetMatcher := range inhibitRule.TargetMatchers {
+		targetMatchers = append(targetMatchers, targetMatcher.ToResp())
+	}
+	return &InhibitRuleResp{
+		Id:             inhibitRule.Id,
+		Name:           inhibitRule.Name,
+		SourceMatchers: sourceMatchers,
+		TargetMatchers: targetMatchers,
+		Equal:          inhibitRule.Equal,
+	}
+}
+
+func (inhibitRule *InhibitRule) GetInhibitRules(pageNo int64, pageSize int64) ShowInhibitRules {
+	var showInhibitRules ShowInhibitRules
+	var inhibitRules []*InhibitRule
+	qs := Ormer().QueryTable(new(InhibitRule))
 
 	// 处理完查询条件之后
-	showInhibits.Total, _ = qs.Count()
-	qs.Limit(pageSize).Offset((pageNo - 1) * pageSize).All(&showInhibits.Inhibits)
+	showInhibitRules.Total, _ = qs.Count()
+	qs.Limit(pageSize).Offset((pageNo - 1) * pageSize).All(&inhibitRules)
 
-	return showInhibits
+	for _, rule := range inhibitRules {
+		var sourceMatchers []*SourceMatcher
+		var targetMatchers []*TargetMatcher
+		_, err := Ormer().QueryTable(new(SourceMatcher)).Filter("inhibit_rule__id", rule.Id).All(&sourceMatchers)
+		if err != nil {
+			logs.Error("Get matchers error:%v", err)
+			return showInhibitRules
+		}
+		_, err = Ormer().QueryTable(new(TargetMatcher)).Filter("inhibit_rule__id", rule.Id).All(&targetMatchers)
+		if err != nil {
+			logs.Error("Get matchers error:%v", err)
+			return showInhibitRules
+		}
+
+		rule.SourceMatchers = sourceMatchers
+		rule.TargetMatchers = targetMatchers
+
+		showInhibitRules.InhibitRules = append(showInhibitRules.InhibitRules, rule.ToResp())
+	}
+
+	return showInhibitRules
+}
+
+// update inhibitRule
+// 1. delete old matchers
+// 2. insert new matchers
+// 3. update inhibitRule fields
+func (inhibitRule *InhibitRule) UpdateInhibitRule() error {
+	o := Ormer()
+	_, err := o.QueryTable(new(SourceMatcher)).Filter("inhibit_rule__id", inhibitRule.Id).Delete()
+	if err != nil {
+		logs.Error("Delete old sourceMatchers error:%v", err)
+		return err
+	}
+	_, err = o.QueryTable(new(TargetMatcher)).Filter("inhibit_rule__id", inhibitRule.Id).Delete()
+	if err != nil {
+		logs.Error("Delete old targetMatchers error:%v", err)
+		return err
+	}
+
+	for _, sourceMatcher := range inhibitRule.SourceMatchers {
+		sourceMatcher.InhibitRule = inhibitRule
+		_, err = o.Insert(sourceMatcher)
+		if err != nil {
+			logs.Error("Insert sourceMatcher error:%v", err)
+			return err
+		}
+	}
+	for _, targetMatcher := range inhibitRule.TargetMatchers {
+		targetMatcher.InhibitRule = inhibitRule
+		_, err = o.Insert(targetMatcher)
+		if err != nil {
+			logs.Error("Insert targetMatcher error:%v", err)
+			return err
+		}
+	}
+
+	_, err = o.Update(inhibitRule)
+	if err != nil {
+		logs.Error("Update inhibitRule error:%v", err)
+		return err
+	}
+	return nil
+}
+
+func (r *InhibitRule) IntoConfigRule() *config.InhibitRule {
+	var (
+		sourcem labels.Matchers
+		targetm labels.Matchers
+	)
+
+	for _, matcher := range r.SourceMatchers {
+		labelMatcher, err := labels.NewMatcher(labels.MatchType(matcher.ExpressionType), matcher.LabelName, matcher.Expression)
+		if err != nil {
+			panic(err)
+		}
+		sourcem = append(sourcem, labelMatcher)
+	}
+	for _, matcher := range r.TargetMatchers {
+		labelMatcher, err := labels.NewMatcher(labels.MatchType(matcher.ExpressionType), matcher.LabelName, matcher.Expression)
+		if err != nil {
+			panic(err)
+		}
+		targetm = append(targetm, labelMatcher)
+	}
+	equal := []model.LabelName{}
+	for _, strv := range strings.Split(r.Equal, ",") {
+		if strv == "" {
+			continue
+		}
+		ln := model.LabelName(strv)
+		equal = append(equal, ln)
+	}
+
+	return &config.InhibitRule{
+		SourceMatchers: config.Matchers(sourcem),
+		TargetMatchers: config.Matchers(targetm),
+		Equal:          equal,
+	}
 }

@@ -1,20 +1,22 @@
-import React, { Component } from 'react';
-import { Menu, Icon } from 'antd';
-import { Switch, withRouter } from 'react-router-dom'
-import { getMethod } from '@apis/login';
+import React, { Component } from "react";
+import { Menu, Icon } from "antd";
+import { Switch, withRouter } from "react-router-dom";
+import { getMethod } from "@apis/login";
 
 // 路由对应 sider 的匹配规则
 const regRouter = new Map([
-  [/^\/rules$/, 'rules'],
-  [/^\/promethus$/, 'promethus'],
-  [/^\/strategy$/, 'strategy'],
-  [/^\/alerts$/, 'alerts'],
-  [/^\/alerts_confirm\/?[\d]+$/, 'alerts_confirm'],
-  [/^\/alerts_confirm$/, 'alerts_confirm'],
-  [/^\/group$/, 'group'],
-  [/^\/maintain$/, 'maintain'],
-  [/^\/user$/, 'user'],
-])
+  [/^\/rules$/, "rules"],
+  [/^\/promethus$/, "promethus"],
+  [/^\/strategy$/, "strategy"],
+  [/^\/alerts$/, "alerts"],
+  [/^\/alerts_confirm\/?[\d]+$/, "alerts_confirm"],
+  [/^\/alerts_confirm$/, "alerts_confirm"],
+  [/^\/group$/, "group"],
+  [/^\/maintain$/, "maintain"],
+  [/^\/user$/, "user"],
+  [/^\/inhibits$/, "inhibits"],
+  [/^\/silence$/, "silence"],
+]);
 
 @withRouter
 export default class Sider extends Component {
@@ -26,40 +28,40 @@ export default class Sider extends Component {
     usermanage: true,
     collapsed: false,
     selectedKeys: [],
-  }
-  activeKey = undefined
+  };
+  activeKey = undefined;
   // event
   toggleCollapsed = () => {
     this.setState({
       collapsed: !this.state.collapsed,
     });
-  }
+  };
   menuClick = (e) => {
-    const { history } = this.props
+    const { history } = this.props;
     history.push(`/${e.key}`);
-  }
+  };
   setMenuActive() {
-    const { pathname } = this.props.history.location
-    let activeKey
+    const { pathname } = this.props.history.location;
+    let activeKey;
     if (pathname) {
       [...regRouter].some(([reg, path]) => {
         if (reg.test(pathname)) {
-          activeKey = path
-          return true
+          activeKey = path;
+          return true;
         }
-        return false
-      })
+        return false;
+      });
       if (activeKey !== this.activeKey) {
-        this.activeKey = activeKey
+        this.activeKey = activeKey;
         this.setState({
           selectedKeys: [activeKey || undefined],
-        })
+        });
       }
     }
   }
   componentWillMount() {
     getMethod({}, (res) => {
-      if (res === 'local') {
+      if (res === "local") {
         this.setState({
           usermanage: false,
         });
@@ -67,19 +69,19 @@ export default class Sider extends Component {
     });
   }
   componentDidMount() {
-    this.setMenuActive()
+    this.setMenuActive();
   }
   componentDidUpdate() {
-    this.setMenuActive()
+    this.setMenuActive();
   }
   render() {
-    const { selectedKeys } = this.state
+    const { selectedKeys } = this.state;
     return (
       <Switch>
         <div id="sidenav" style={{ width: 220 }}>
           <Menu
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={["1"]}
+            defaultOpenKeys={["sub1"]}
             mode="inline"
             theme="dark"
             selectedKeys={selectedKeys}
@@ -106,13 +108,17 @@ export default class Sider extends Component {
               <Icon type="alert" />
               <span>报警确认</span>
             </Menu.Item>
+            <Menu.Item key="inhibits">
+              <Icon type="contacts" />
+              <span>报警抑制</span>
+            </Menu.Item>
             <Menu.Item key="group">
               <Icon type="contacts" />
               <span>报警接收组</span>
             </Menu.Item>
-            <Menu.Item key="maintain">
+            <Menu.Item key="silence">
               <Icon type="contacts" />
-              <span>维护组</span>
+              <span>静默规则</span>
             </Menu.Item>
             <Menu.Item key="user" disabled={this.state.usermanage}>
               <Icon type="contacts" />

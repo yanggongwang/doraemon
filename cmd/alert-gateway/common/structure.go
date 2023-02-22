@@ -3,19 +3,22 @@ package common
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/prometheus/alertmanager/types"
+	"github.com/prometheus/common/model"
 )
 
 var ErrHttpRequest = errors.New("create HTTP request failed")
-var Maintain map[string]bool
 var RuleCount map[[2]int64]int64
 var Recover2Send = map[string]map[[2]int64]*Ready2Send{
 	AlertMethodLanxin: {},
-	//"HOOK":   map[[2]int64]*Ready2Send{},
 }
 
 var Lock sync.Mutex
@@ -23,7 +26,7 @@ var Rw sync.RWMutex
 
 func UpdateRecovery2Send(ug UserGroup, alert Alert, users []string, alertId int64, alertCount int, hostname string) {
 
-	ruleId, _ := strconv.ParseInt(alert.Annotations.RuleId, 10, 64)
+	ruleId, _ := strconv.ParseInt(alert.Annotations["rule_id"], 10, 64)
 
 	Lock.Lock()
 	defer Lock.Unlock()
@@ -36,8 +39,9 @@ func UpdateRecovery2Send(ug UserGroup, alert Alert, users []string, alertId int6
 				Id:       alertId,
 				Count:    alertCount,
 				Value:    alert.Value,
-				Summary:  alert.Annotations.Summary,
+				Summary:  alert.Annotations["summary"],
 				Hostname: hostname,
+				Labels:   alert.Labels,
 			}},
 		}}
 	} else {
@@ -50,7 +54,7 @@ func UpdateRecovery2Send(ug UserGroup, alert Alert, users []string, alertId int6
 					Id:       alertId,
 					Count:    alertCount,
 					Value:    alert.Value,
-					Summary:  alert.Annotations.Summary,
+					Summary:  alert.Annotations["summary"],
 					Hostname: hostname,
 					Labels:   alert.Labels,
 				}},
@@ -60,8 +64,9 @@ func UpdateRecovery2Send(ug UserGroup, alert Alert, users []string, alertId int6
 				Id:       alertId,
 				Count:    alertCount,
 				Value:    alert.Value,
-				Summary:  alert.Annotations.Summary,
+				Summary:  alert.Annotations["summary"],
 				Hostname: hostname,
+				Labels:   alert.Labels,
 			})
 		}
 	}
@@ -143,19 +148,15 @@ func (u UserGroup) IsOnDuty() bool {
 type Alerts []Alert
 
 type Alert struct {
-	ActiveAt    time.Time `json:"active_at"`
-	Annotations struct {
-		Description string `json:"description"`
-		Summary     string `json:"summary"`
-		RuleId      string `json:"rule_id"`
-	} `json:"annotations"`
-	FiredAt    time.Time         `json:"fired_at"`
-	Labels     map[string]string `json:"labels"`
-	LastSentAt time.Time         `json:"last_sent_at"`
-	ResolvedAt time.Time         `json:"resolved_at"`
-	State      int               `json:"state"`
-	ValidUntil time.Time         `json:"valid_until"`
-	Value      float64           `json:"value"`
+	ActiveAt    time.Time         `json:"active_at"`
+	Annotations map[string]string `json:"annotations"`
+	FiredAt     time.Time         `json:"fired_at"`
+	Labels      map[string]string `json:"labels"`
+	LastSentAt  time.Time         `json:"last_sent_at"`
+	ResolvedAt  time.Time         `json:"resolved_at"`
+	State       int               `json:"state"`
+	ValidUntil  time.Time         `json:"valid_until"`
+	Value       float64           `json:"value"`
 }
 
 type AlertForShow struct {
@@ -207,10 +208,8 @@ func HttpPost(url string, params map[string]string, headers map[string]string, b
 		req.URL.RawQuery = q.Encode()
 	}
 	//add headers
-	if headers != nil {
-		for key, val := range headers {
-			req.Header.Add(key, val)
-		}
+	for key, val := range headers {
+		req.Header.Add(key, val)
 	}
 	//http client
 	client := &http.Client{Timeout: 5 * time.Second} //Add the timeout,the reason is that the default client has no timeout set; if the remote server is unresponsive, you're going to have a bad day.
@@ -233,12 +232,71 @@ func HttpGet(url string, params map[string]string, headers map[string]string) (*
 		req.URL.RawQuery = q.Encode()
 	}
 	//add headers
-	if headers != nil {
-		for key, val := range headers {
-			req.Header.Add(key, val)
-		}
+	for key, val := range headers {
+		req.Header.Add(key, val)
 	}
 	//http client
 	client := &http.Client{Timeout: 5 * time.Second} //Add the timeout,the reason is that the default client has no timeout set; if the remote server is unresponsive, you're going to have a bad day.
 	return client.Do(req)
+}
+
+// MapToLabalSet convert map[string]string to model.LabelSet
+func MapToLabalSet(m map[string]string) model.LabelSet {
+	labelSet := model.LabelSet{}
+	for k, v := range m {
+		labelSet[model.LabelName(k)] = model.LabelValue(v)
+	}
+	return labelSet
+}
+
+// ToPrometheusAlert convert Alert to prometheus Alert
+func (alert *Alert) ToPrometheusAlert() *types.Alert {
+	var prometheusAlert types.Alert
+	labels := alert.Labels
+	prometheusAlert.Labels = MapToLabalSet(labels)
+	prometheusAlert.Annotations = MapToLabalSet(alert.Annotations)
+	prometheusAlert.StartsAt = alert.FiredAt
+	prometheusAlert.EndsAt = alert.ResolvedAt
+
+	if alert.State == 2 {
+		prometheusAlert.EndsAt = time.Now().Add(time.Hour)
+	} else {
+		prometheusAlert.EndsAt = alert.ResolvedAt
+		prometheusAlert.Timeout = false
+	}
+
+	return &prometheusAlert
+}
+
+// ToPrometheusAlerts convert Alerts to prometheus Alerts
+func (alerts Alerts) ToPrometheusAlerts() []*types.Alert {
+	res := []*types.Alert{}
+	for _, alert := range alerts {
+		res = append(res, alert.ToPrometheusAlert())
+	}
+	return res
+}
+
+// ConvertStringToLabelMap convert string to map[string]string
+func ConvertStringToLabelMap(str string) map[string]string {
+	res := map[string]string{}
+	if str == "" {
+		return res
+	}
+	for _, s := range strings.Split(str, ",") {
+		kv := strings.Split(s, "=")
+		if len(kv) == 2 {
+			res[kv[0]] = kv[1]
+		}
+	}
+	return res
+}
+
+// ConvertLabelMapToString convert map[string]string to string
+func ConvertLabelMapToString(m map[string]string) string {
+	res := []string{}
+	for k, v := range m {
+		res = append(res, fmt.Sprintf("%s=%s", k, v))
+	}
+	return strings.Join(res, ",")
 }

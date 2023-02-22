@@ -1,22 +1,20 @@
 package initial
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"math"
 	"runtime"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/astaxie/beego/orm"
-
-	"github.com/astaxie/beego"
+	"github.com/prometheus/alertmanager/types"
+	"github.com/prometheus/common/model"
 
 	"doraemon/cmd/alert-gateway/common"
+	"doraemon/cmd/alert-gateway/inhibit"
 	"doraemon/cmd/alert-gateway/logs"
 	"doraemon/cmd/alert-gateway/models"
+	"doraemon/cmd/alert-gateway/silence"
 )
 
 type Record struct {
@@ -64,47 +62,6 @@ type RecoverRecord struct {
 	Count    int
 	Summary  string
 	Hostname string
-}
-
-func UpdateMaintainlist() {
-	defer func() {
-		if e := recover(); e != nil {
-			buf := make([]byte, 16384)
-			buf = buf[:runtime.Stack(buf, false)]
-			logs.Panic.Error("Panic in UpdateMaintainlist:%v\n%s", e, buf)
-		}
-	}()
-	delta, _ := time.ParseDuration("30s")
-	datetime := time.Now().Add(delta)
-	now := datetime.Format("15:04")
-	maintainIds := []struct {
-		Id int64
-	}{}
-	models.Ormer().Raw("SELECT id FROM maintain WHERE valid>=? AND day_start<=? AND day_end>=? AND (flag=true AND (time_start<=? OR time_end>=?) OR flag=false AND time_start<=? AND time_end>=?) AND month&"+strconv.Itoa(int(math.Pow(2, float64(time.Now().Month()))))+">0", datetime.Format("2006-01-02 15:04:05"), datetime.Day(), datetime.Day(), now, now, now, now).QueryRows(&maintainIds)
-	//fmt.Println("abc",datetime.Format("2006-01-02 15:04:05"),datetime.Day(),now,maintainids)
-	m := map[string]bool{}
-	for _, mid := range maintainIds {
-		hosts := []struct {
-			Hostname string
-		}{}
-		models.Ormer().Raw("SELECT hostname FROM host WHERE mid=?", mid.Id).QueryRows(&hosts)
-		for _, name := range hosts {
-			m[name.Hostname] = true
-		}
-	}
-	res, err := common.HttpGet(beego.AppConfig.String("BrokenUrl"), nil, map[string]string{"Authorization": "Bearer 8gi6UvoPJgIRcunHBWDHel4fCLQVn9"})
-	if err == nil {
-		jsonDataFromHttp, _ := ioutil.ReadAll(res.Body)
-		//fmt.Println(string(jsonDataFromHttp))
-		brokenList := common.BrokenList{}
-		json.Unmarshal(jsonDataFromHttp, &brokenList)
-		for _, i := range brokenList.Hosts {
-			m[i.Hostname] = true
-		}
-	}
-	common.Rw.Lock()
-	common.Maintain = m
-	common.Rw.Unlock()
 }
 
 func Filter(alerts map[int64][]Record, maxCount map[int64]int) map[string][]common.Ready2Send {
@@ -195,26 +152,23 @@ func putToAlertMap(alertMap map[int][]common.SingleAlert, ug common.UserGroup, a
 
 	for _, alert := range alerts {
 		if alert.Count >= ug.Start {
-			if _, ok := common.Maintain[alert.Hostname]; !ok {
-				alertMap[ug.Start] = append(alertMap[ug.Start], common.SingleAlert{
-					Id:       alert.Id,
-					Count:    alert.Count,
-					Value:    alert.Value,
-					Summary:  alert.Summary,
-					Hostname: alert.Hostname,
-					Labels:   alert.getLabelMap(),
-				})
-			}
+			alertMap[ug.Start] = append(alertMap[ug.Start], common.SingleAlert{
+				Id:       alert.Id,
+				Count:    alert.Count,
+				Value:    alert.Value,
+				Summary:  alert.Summary,
+				Hostname: alert.Hostname,
+				Labels:   alert.getLabelMap(),
+			})
 		}
 	}
 }
 
-func init() {
+func Timer() {
 	go func() {
 		for {
 			current := time.Now()
 			time.Sleep(time.Duration(90-current.Second()) * time.Second)
-			UpdateMaintainlist()
 		}
 	}()
 	go func() {
@@ -232,15 +186,14 @@ func init() {
 					}
 				}()
 				var info []Record
-				//_, err := o.QueryTable(models.Alerts{}).Limit(-1).Filter("status", 2).Update(orm.Params{"count": orm.ColValue(orm.ColAdd, 1)})
 				models.Ormer().Raw("UPDATE alert SET status=2 WHERE status=1 AND confirmed_before<?", now).Exec()
 				o := orm.NewOrm()
 				o.Begin()
 				o.Raw("UPDATE alert SET count=count+1 WHERE status!=0").Exec()
 				o.Raw("SELECT id,rule_id,value,count,summary,description,hostname,confirmed_before,fired_at,labels FROM alert WHERE status = ?", 2).QueryRows(&info)
 				//filter alerts...
-
-				info = toInhibit(info) // update alerts to new set
+				info = toInhibit(info)
+				info = toSilence(info)
 
 				aggregation := map[int64][]Record{}
 				maxCount := map[int64]int{}
@@ -264,7 +217,6 @@ func init() {
 				recover2send := common.Recover2Send
 				common.Recover2Send = map[string]map[[2]int64]*common.Ready2Send{
 					common.AlertMethodLanxin: {},
-					//"HOOK":   map[[2]int64]*common.Ready2Send{},
 				}
 				common.Lock.Unlock()
 				logs.Alertloger.Info("Recoveries to send:%v", recover2send)
@@ -275,93 +227,73 @@ func init() {
 }
 
 func toInhibit(alerts []Record) []Record {
-	// Inhibit处理
-	/*
-		1.查询 inhibit 规则
-		2.解析 alerts 的 labels 成 k-v 结构
-		3.匹配 alerts 的labels
-			- vs inhibit.source_expression,将命中的 alerts 记录到 alert_source，结构为{"alert_id":xx, "inhibit":{xx},"target_alert":{xx}}
-			- vs inhibit.target_expression,将命中的 alerts 记录到 alert_target
-		4.将被抑制的，保存到 inhibit_log
-
-	*/
-
-	type AlertWithLables struct {
-		alert     Record
-		labelsMap map[string]bool
-	}
-
-	type SourceAlert struct {
-		alert   AlertWithLables
-		inhibit models.Inhibits
-	}
-	var inhibits []models.Inhibits
-	o := orm.NewOrm()
-	o.Raw("SELECT * FROM inhibits").QueryRows(&inhibits)
-	if nil == inhibits {
-		return alerts
-	}
-
 	var alerts2Send []Record
-	var alertWithLabels []AlertWithLables
+
+	inhibit.InhibitorLock.RLock()
+	defer inhibit.InhibitorLock.RUnlock()
 	for _, alert := range alerts {
-		var alertWithLable AlertWithLables
-		alertWithLable.alert = alert
-		alertWithLable.labelsMap = alert.getLabelBoolMap()
+		labelset := common.MapToLabalSet(alert.getLabelMap())
 
-		alertWithLabels = append(alertWithLabels, alertWithLable)
-	}
-
-	sourceAlerts := map[string][]SourceAlert{}
-	for _, alert := range alertWithLabels {
-		for _, inhibit := range inhibits {
-
-			// 源匹配
-			if _, ok := alert.labelsMap[inhibit.SourceExpression]; ok {
-				if _, ok2 := sourceAlerts[inhibit.Targetxpression]; !ok2 {
-					//sourceAlerts[inhibit.Targetxpression][0] = SourceAlert{alert: alert, inhibit:inhibit}
-					sourceAlerts[inhibit.Targetxpression] = []SourceAlert{}
-				}
-				sourceAlerts[inhibit.Targetxpression] = append(sourceAlerts[inhibit.Targetxpression], SourceAlert{alert: alert, inhibit: inhibit})
+		if inhibit.Inhibitor.Mutes(labelset) {
+			source, _ := GetMarker().Inhibited(labelset.Fingerprint())
+			fp, err := model.ParseFingerprint(source[0])
+			if err != nil {
+				fmt.Printf("ParseFingerprint err:%v\n", err)
 			}
-		}
-	}
-
-	curTime, _ := time.ParseInLocation("2019-01-01 15:22:22", time.Now().String(), time.Local)
-	inhibitlogsMap := map[int64]models.InhibitLog{}
-	for _, alertWithLabel := range alertWithLabels {
-		for targetExpression, sourceAlertArr := range sourceAlerts {
-			for _, sourceAlert := range sourceAlertArr {
-				if _, ok := alertWithLabel.labelsMap[targetExpression]; ok { // to inhibit
-					if _, ok2 := inhibitlogsMap[alertWithLabel.alert.Id]; !ok2 {
-						var il models.InhibitLog
-						il.Id = 0
-						il.AlertId = alertWithLabel.alert.Id
-						il.Summary = alertWithLabel.alert.Summary
-						il.SourceExpression = sourceAlert.inhibit.SourceExpression
-						il.Targetxpression = targetExpression
-						il.Labels = alertWithLabel.alert.Labels
-						il.RelateLabels = "" // unknown
-						il.TriggerTime = &curTime
-						il.Sources = strconv.Itoa(int(sourceAlert.alert.alert.Id))
-
-						inhibitlogsMap[alertWithLabel.alert.Id] = il
-					} else {
-						var il = inhibitlogsMap[alertWithLabel.alert.Id]
-						il.Sources += "," + strconv.Itoa(int(sourceAlert.alert.alert.Id))
-						inhibitlogsMap[alertWithLabel.alert.Id] = il
-					}
-				} else {
-					// NOTE: no-inhibit alerts, continue to Send
-					alerts2Send = append(alerts2Send, alertWithLabel.alert)
+			sourceAlert, err := inhibit.AlertmanagerAlerts.Get(fp)
+			if err != nil {
+				fmt.Printf("AlertmanagerAlerts.Get SourceAlert err:%v\n", err)
+			}
+			triggerTime := inhibitTriggerTime(sourceAlert, &alert)
+			var inhibitLog models.InhibitLog
+			inhibitLog.Id = 0
+			inhibitLog.AlertId = alert.Id
+			inhibitLog.Summary = alert.Summary
+			inhibitLog.Labels = alert.Labels
+			inhibitLog.Sources = string(sourceAlert.Annotations["alert_id"])
+			inhibitLog.TriggerTime = triggerTime
+			if !inhibitLog.Exists() {
+				err = inhibitLog.InsertInhibitLog()
+				if err != nil {
+					fmt.Printf("InsertInhibitLog err:%v\n", err)
 				}
 			}
+		} else {
+			alerts2Send = append(alerts2Send, alert)
 		}
 	}
-
-	for _, inhibit_log := range inhibitlogsMap {
-		inhibit_log.InsertInhibitLog()
-	}
-
 	return alerts2Send
+}
+
+func toSilence(alerts []Record) []Record {
+	var alerts2Send []Record
+	for _, alert := range alerts {
+		labelset := common.MapToLabalSet(alert.getLabelMap())
+		if !silence.Silencer.Mutes(labelset) {
+			alerts2Send = append(alerts2Send, alert)
+		} else {
+			logs.Debug("Alert %v is muted by silence", alert)
+		}
+	}
+	return alerts2Send
+}
+
+// return the inhibited alert's trigger time
+// if source alert fired after target alert, return source alert's trigger time
+// else return target alert's trigger time
+func inhibitTriggerTime(source *types.Alert, alert *Record) *time.Time {
+	timePattern := "2006-01-02 15:04:05"
+	if alert.FiredAt.Sub(source.StartsAt) < 0 {
+		t, err := time.ParseInLocation(timePattern, source.StartsAt.Format(timePattern), time.Local)
+		if err != nil {
+			logs.Error("inhibitTriggerTime ParseInLocation err:%v", err)
+		}
+		return &t
+	} else {
+		t, err := time.ParseInLocation(timePattern, alert.FiredAt.Format(timePattern), time.Local)
+		if err != nil {
+			logs.Error("inhibitTriggerTime ParseInLocation err:%v", err)
+		}
+		return &t
+	}
 }

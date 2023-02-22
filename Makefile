@@ -4,7 +4,7 @@ gateway.url = "default"
 MAKEFLAGS += --warn-undefined-variables
 
 # Build variables
-REGISTRY_URI :=360cloud
+REGISTRY_URI :=registry.miyuan.com/miyuan
 RELEASE_VERSION :=$(shell git describe --always --tags)
 UI_BUILD_VERSION :=v1.0.0
 SERVER_BUILD_VERSION :=v1.0.0
@@ -22,14 +22,14 @@ run-frontend:
 # release, requiring Docker 17.05 or higher on the daemon and client
 build-backend-image:
 	@echo "version: $(RELEASE_VERSION)"
-	docker build --no-cache -t $(REGISTRY_URI)/alert-gateway:$(RELEASE_VERSION) -f build/backend/Dockerfile .
+	docker buildx build --platform=linux/amd64 --no-cache -t $(REGISTRY_URI)/alert-gateway:$(RELEASE_VERSION) -f build/backend/Dockerfile .
 build-frontend-image:
 	@echo "version: $(RELEASE_VERSION)"
-	docker build --no-cache -t $(REGISTRY_URI)/doraemon-frontend:$(RELEASE_VERSION) -f build/frontend/Dockerfile .
+	docker buildx build --platform=linux/amd64 --no-cache -t $(REGISTRY_URI)/doraemon-frontend:$(RELEASE_VERSION) -f build/frontend/Dockerfile .
 
 build-ruleengine-image:
 	@echo "version: $(RELEASE_VERSION)"
-	docker build --no-cache -t $(REGISTRY_URI)/rule-engine:$(RELEASE_VERSION) -f build/rule-engine/Dockerfile .
+	docker buildx build --platform=linux/amd64 --no-cache -t $(REGISTRY_URI)/rule-engine:$(RELEASE_VERSION) -f build/rule-engine/Dockerfile .
 
 
 push-image:

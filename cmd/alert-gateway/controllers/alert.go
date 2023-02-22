@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"runtime"
 	"strconv"
 
 	"github.com/astaxie/beego"
 
 	"doraemon/cmd/alert-gateway/common"
+	"doraemon/cmd/alert-gateway/inhibit"
 	"doraemon/cmd/alert-gateway/logs"
 	"doraemon/cmd/alert-gateway/models"
 )
@@ -110,6 +112,11 @@ func (c *AlertController) HandleAlerts() {
 	} else {
 		var Receiver *models.Alerts
 		Receiver.AlertsHandler(&alerts)
+		prometheusAlerts := models.AnnotationAddRuleId(alerts).ToPrometheusAlerts()
+		for _, alert := range prometheusAlerts {
+			fmt.Printf("Annotations: %v\n", alert.Annotations)
+		}
+		inhibit.AlertmanagerAlerts.Put(prometheusAlerts...)
 	}
 	c.Data["json"] = &ans
 	c.ServeJSON()

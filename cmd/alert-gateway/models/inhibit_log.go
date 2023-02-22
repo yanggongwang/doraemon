@@ -10,15 +10,12 @@ import (
 )
 
 type InhibitLog struct {
-	Id               int64      `orm:"column(id);auto" json:"id,omitempty"`
-	AlertId          int64      `orm:"column(alert_id);" json:"alert_id"`
-	Summary          string     `orm:"column(summary);size(1023)" json:"summary"`
-	Labels           string     `orm:"column(labels);size(1023)" json:"labels"`
-	SourceExpression string     `orm:"column(source_expression);size(1023)" json:"source_expression"`
-	Targetxpression  string     `orm:"column(target_expression);size(1023)" json:"target_expression"`
-	RelateLabels     string     `orm:"column(relate_labels);size(255)" json:"relate_labels"`
-	Sources          string     `orm:"column(sources);size(127)" json:"sources"`
-	TriggerTime      *time.Time `orm:"type(datetime)" json:"trigger_time"`
+	Id          int64      `orm:"column(id);auto" json:"id,omitempty"`
+	AlertId     int64      `orm:"column(alert_id);" json:"alert_id"`
+	Summary     string     `orm:"column(summary);size(1023)" json:"summary"`
+	Labels      string     `orm:"column(labels);size(1023)" json:"labels"`
+	Sources     string     `orm:"column(sources);size(127)" json:"sources"`
+	TriggerTime *time.Time `orm:"type(datetime)" json:"trigger_time"`
 }
 
 type ShowInhibitLogs struct {
@@ -31,13 +28,26 @@ func (*InhibitLog) TableName() string {
 }
 
 func (inhibitLog *InhibitLog) InsertInhibitLog() error {
-	o := orm.NewOrm()
+	o := Ormer()
 	_, err := o.Insert(inhibitLog)
 	if err != nil {
 		logs.Error("Insert InhibitLog error:%v", err)
 		return errors.Wrap(err, "database insert error")
 	}
 	return errors.Wrap(err, "database insert error")
+}
+
+func (inhibitLog *InhibitLog) Exists() bool {
+	var id int64
+	err := Ormer().Raw("select id from inhibit_logs where alert_id = ? and sources = ? and trigger_time = ?", inhibitLog.AlertId, inhibitLog.Sources, inhibitLog.TriggerTime).QueryRow(&id)
+	logs.Debug("InhibitLog.Exists(alert_id, sources, trigger_time): %v, %v, %v", inhibitLog.AlertId, inhibitLog.Sources, inhibitLog.TriggerTime)
+	if err != nil {
+		if err != orm.ErrNoRows {
+			logs.Error("InhibitLog Exists error:%v", err)
+		}
+		return false
+	}
+	return true
 }
 
 func (*InhibitLog) Get(id int64) InhibitLog {
@@ -58,7 +68,7 @@ func (*InhibitLog) GetInhibitLogs(pageNo int64, pageSize int64, timeStart string
 
 	// 处理完查询条件之后
 	showInhibitLogs.Total, _ = qs.Count()
-	qs.Limit(pageSize).Offset((pageNo - 1) * pageSize).All(&showInhibitLogs.InhibitLogs)
+	qs.OrderBy("-id").Limit(pageSize).Offset((pageNo - 1) * pageSize).All(&showInhibitLogs.InhibitLogs)
 
 	return showInhibitLogs
 }

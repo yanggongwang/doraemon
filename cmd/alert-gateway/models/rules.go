@@ -15,13 +15,12 @@ type Rules struct {
 	Op          string `orm:"column(op);size(31)" json:"op"`
 	Value       string `orm:"column(value);size(1023)" json:"value"`
 	For         string `orm:"column(for);size(1023)" json:"for"`
+	Alert       string `orm:"column(alert);size(1023)" json:"alert"`
+	Labels      string `orm:"column(labels);size(1023)" json:"labels"`
 	Summary     string `orm:"column(summary);size(1023)" json:"summary"`
 	Description string `orm:"column(description);size(1023)" json:"description"`
 	PromId      int64  `orm:"column(prom_id);" json:"prom_id"`
 	PlanId      int64  `orm:"column(plan_id);" json:"plan_id"`
-	//Prom        	*Proms `orm:"rel(fk)" json:"prom_id"`
-	//Plan        	*Plans `orm:"rel(fk)" json:"plan_id"`
-	//Labels      []*Labels `orm:"rel(m2m);rel_through(alert-gateway/models.RuleLabels)" json:"omitempty"`
 }
 
 type ShowRules struct {
@@ -35,7 +34,11 @@ func (*Rules) TableName() string {
 
 func (rule *Rules) DeleteRule(id string) error {
 	_, err := Ormer().Raw("DELETE FROM rule WHERE id = ?", id).Exec()
-	return errors.Wrap(err, "database delete error")
+	if err != nil {
+		logs.Error("delete rule error:%v", err)
+		return errors.Wrap(err, "database delete error")
+	}
+	return nil
 }
 
 func (rule *Rules) UpdateRule() error {

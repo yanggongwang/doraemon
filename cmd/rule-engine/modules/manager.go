@@ -128,11 +128,12 @@ type Alert rules.Alert
 
 // MarshalJSON ...
 func (a *Alert) MarshalJSON() ([]byte, error) {
-	for idx, i := range a.Labels {
-		if i.Name == "alertname" {
-			a.Labels = append(a.Labels[:idx], a.Labels[idx+1:]...)
-		}
-	}
+	// // 报警的alertname是RuleId,这里去掉
+	// for idx, i := range a.Labels {
+	// 	if i.Name == "alertname" {
+	// 		a.Labels = append(a.Labels[:idx], a.Labels[idx+1:]...)
+	// 	}
+	// }
 	return json.Marshal(map[string]interface{}{
 		"state":        a.State,
 		"labels":       a.Labels,

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"runtime"
 	"sort"
 	"strconv"
@@ -9,6 +10,9 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/pkg/errors"
+	"github.com/prometheus/alertmanager/provider/mem"
+	"github.com/prometheus/alertmanager/types"
+	"github.com/prometheus/common/model"
 
 	"doraemon/cmd/alert-gateway/common"
 	"doraemon/cmd/alert-gateway/logs"
@@ -55,12 +59,6 @@ func (*Alerts) TableName() string {
 	return "alert"
 }
 
-//func (u *Alerts) TableUnique() [][]string {
-//	return [][]string{
-//		[]string{"Rule", "Labels", "FiredAt"},
-//	}
-//}
-
 type record struct {
 	Id              int64
 	RuleId          int64
@@ -94,10 +92,10 @@ func (r record) toOneAlert() OneAlert {
 	}
 }
 
-func (r record) getLabelMap() map[string]string {
+func getLabelMap(labelString string) map[string]string {
 	label := map[string]string{}
-	if r.Labels != "" {
-		for _, e := range strings.Split(r.Labels, "\v") {
+	if labelString != "" {
+		for _, e := range strings.Split(labelString, "\v") {
 			kv := strings.Split(e, "\a")
 			label[kv[0]] = kv[1]
 		}
@@ -110,7 +108,7 @@ func (r record) toAlertForShow() common.AlertForShow {
 	return common.AlertForShow{
 		Id:              r.Id,
 		RuleId:          r.RuleId,
-		Labels:          r.getLabelMap(),
+		Labels:          getLabelMap(r.Labels),
 		Value:           r.Value,
 		Count:           r.Count,
 		Status:          r.Status,
@@ -249,7 +247,7 @@ func (u *Alerts) ShowAlerts(ruleId string, start string, pageNo int64, pageSize 
 	}
 	_, _ = Ormer().Raw("SELECT id,rule_id,labels,value,count,status,summary,description,confirmed_by,fired_at,confirmed_at,confirmed_before,resolved_at FROM alert WHERE count>=? AND rule_id=? AND status!=0 ORDER BY status DESC,id DESC", strategy.Start, ruleId).QueryRows(&records)
 	for _, i := range records {
-		label := i.getLabelMap()
+		label := getLabelMap(i.Labels)
 		if strategy.ReversePolishNotation != "" {
 			if common.CalculateReversePolishNotation(label, strategy.ReversePolishNotation) {
 				showAlerts.Alerts = append(showAlerts.Alerts, i.toAlertForShow())
@@ -314,7 +312,7 @@ func (a *alertForQuery) setFields() {
 	var labels []string
 
 	// set ruleId
-	a.ruleId, _ = strconv.ParseInt(a.Annotations.RuleId, 10, 64)
+	a.ruleId, _ = strconv.ParseInt(a.Annotations["rule_id"], 10, 64)
 	for key := range a.Labels {
 		orderKey = append(orderKey, key)
 	}
@@ -356,70 +354,58 @@ func (u *Alerts) AlertsHandler(alert *common.Alerts) {
 	Cache := map[int64][]common.UserGroup{}
 	todayZero, _ := time.ParseInLocation("2006-01-02", "2019-01-01 15:22:22", time.Local)
 	for _, elemt := range *alert {
-
-		var queryres []struct {
-			Id     int64
-			Status uint8
-		}
-		var updateAlerts []struct {
-			Id     int64
-			Status uint8
-		}
+		var (
+			id     int64
+			status uint8
+		)
 
 		a := &alertForQuery{Alert: &elemt}
 		a.setFields()
 
-		_, err := Ormer().Raw("SELECT id,status FROM alert WHERE rule_id =? AND labels=? AND fired_at=?", a.ruleId, a.label, a.firedAt).QueryRows(&queryres)
+		// _, err := Ormer().Raw("SELECT id,status FROM alert WHERE rule_id =? AND labels=? AND fired_at=?", a.ruleId, a.label, a.firedAt).QueryRows(&queryres)
+		err := Ormer().Raw("SELECT id,status FROM alert WHERE rule_id =? AND labels=? AND fired_at=?", a.ruleId, a.label, a.firedAt).QueryRow(&id, &status)
+		// query error and not no rows error
+		if err != nil && err != orm.ErrNoRows {
+			logs.Error("query alert error: %v", err)
+			return
+		}
+		// find alert
 		if err == nil {
-			if len(queryres) > 0 {
-				// alert has been triggered by post requests before
-				if queryres[0].Status != 0 {
-					const AlertStatusOff = 0
-					if elemt.State == AlertStatusOff {
-						// handle the recover message
-						recoverAlert(*a, Cache)
-					} else {
-						Ormer().Raw("UPDATE alert SET summary=?,description=?,value=? WHERE rule_id =? AND labels=? AND fired_at=?", elemt.Annotations.Summary, elemt.Annotations.Description, elemt.Value, a.ruleId, a.label, a.firedAt).Exec()
-					}
+			elemt.Annotations["id"] = fmt.Sprintf("%d", id)
+			// alert has been triggered by post requests before
+			if status != 0 {
+				const AlertStatusOff = 0
+				if elemt.State == AlertStatusOff {
+					// handle the recover message
+					recoverAlert(*a, Cache)
 				} else {
-					continue
+					Ormer().Raw("UPDATE alert SET summary=?,description=?,value=? WHERE rule_id =? AND labels=? AND fired_at=?", elemt.Annotations["summary"], elemt.Annotations["description"], elemt.Value, a.ruleId, a.label, a.firedAt).Exec()
 				}
 			} else {
-				//插入新告警之前，将老的告警的status字段update为3，3不会发告警
-				_, err := Ormer().Raw("SELECT id,status FROM alert WHERE rule_id =? AND labels=? AND status !=?", a.ruleId, a.label, 0).QueryRows(&updateAlerts)
-				if len(updateAlerts) > 0 {
-					//old alert ，updaate status
-					for _, id := range updateAlerts {
-						//_, err = Ormer().Raw("DELETE FROM alert WHERE id=?", id.Id).Exec()
-						_, err = Ormer().Raw("UPDATE  alert SET status =? WHERE id=?", 3, id.Id).Exec()
-						if err != nil {
-							logs.Error("database update alert error:%s\n", err)
-						}
-					}
-				}
-				// insert an new alert
-				var alert Alerts
-				alert.Id = 0 //reset the "Id" to 0,which is very important:after a record is inserted,the value of "Id" will not be 0,but the auto primary key of the record
-				alert.Rule = &Rules{Id: a.ruleId}
-				alert.Labels = a.label
-				alert.FiredAt = &a.firedAt
-				alert.Description = elemt.Annotations.Description
-				alert.Summary = elemt.Annotations.Summary
-				alert.Count = -1
-				alert.Value = elemt.Value
-				alert.Status = int8(elemt.State)
-				alert.Hostname = a.hostname
-				alert.ConfirmedAt = &todayZero
-				alert.ConfirmedBefore = &todayZero
-				alert.ResolvedAt = &todayZero
-				_, err = Ormer().Insert(&alert)
-				if err != nil {
-					logs.Error("Insert alter failed:%s", err)
-				}
+				continue
+			}
+
+		} else { // not find alert, insert alert
+			var alert Alerts
+			alert.Id = 0 //reset the "Id" to 0,which is very important:after a record is inserted,the value of "Id" will not be 0,but the auto primary key of the record
+			alert.Rule = &Rules{Id: a.ruleId}
+			alert.Labels = a.label
+			alert.FiredAt = &a.firedAt
+			alert.Description = elemt.Annotations["description"]
+			alert.Summary = elemt.Annotations["summary"]
+			alert.Count = -1
+			alert.Value = elemt.Value
+			alert.Status = int8(elemt.State)
+			alert.Hostname = a.hostname
+			alert.ConfirmedAt = &todayZero
+			alert.ConfirmedBefore = &todayZero
+			alert.ResolvedAt = &todayZero
+			id, err = Ormer().Insert(&alert)
+			if err != nil {
+				logs.Error("Insert alter failed:%s", err)
 			}
 		}
 	}
-	//logs.Panic.Debug("[%s] recoverid: %v", now, rlist)
 }
 
 /*
@@ -460,60 +446,109 @@ func recoverAlert(a alertForQuery, cache map[int64][]common.UserGroup) {
 	if err == nil {
 		if recoverInfo.Id != 0 {
 			// update alert state
-			_, err = o.Raw("UPDATE alert SET status=?,summary=?,description=?,value=?,resolved_at=? WHERE id=?", a.State, a.Annotations.Summary, a.Annotations.Description, a.Value, a.ResolvedAt, recoverInfo.Id).Exec()
+			_, err = o.Raw("UPDATE alert SET status=?,summary=?,description=?,value=?,resolved_at=? WHERE id=?", a.State, a.Annotations["summary"], a.Annotations["description"], a.Value, a.ResolvedAt, recoverInfo.Id).Exec()
 			if err == nil {
-				// lock for reading map common.Maintain
 				common.Rw.RLock()
-				if _, ok := common.Maintain[a.hostname]; !ok {
-					var userGroupList []common.UserGroup
-					var planId struct {
-						PlanId  int64
-						Summary string
-					}
-					Ormer().Raw("SELECT plan_id,summary FROM rule WHERE id=?", a.ruleId).QueryRow(&planId)
-					if _, ok := cache[planId.PlanId]; !ok {
-						Ormer().Raw("SELECT id,start_time,end_time,start,period,reverse_polish_notation,user,`group`,duty_group,method FROM plan_receiver WHERE plan_id=? AND (method='LANXIN' OR method LIKE 'HOOK %')", planId.PlanId).QueryRows(&userGroupList)
-						cache[planId.PlanId] = userGroupList
-					}
-					for _, element := range cache[planId.PlanId] {
-
-						if !(element.IsValid() && element.IsOnDuty()) {
-							continue
-						}
-
-						if !(recoverInfo.Count >= element.Start) {
-							continue
-						}
-
-						if ok := shouldSend(recoverInfo.Id, a.ruleId, recoverInfo.Count, element); !ok {
-							continue
-						}
-
-						if element.ReversePolishNotation != "" && !common.CalculateReversePolishNotation(a.Labels, element.ReversePolishNotation) {
-							continue
-						}
-
-						// merge users
-						users := SendAlertsFor(&common.ValidUserGroup{
-							User:      element.User,
-							Group:     element.Group,
-							DutyGroup: element.DutyGroup,
-						})
-
-						// update Recover2Send, other goroutines in timer.go will handle it
-						common.UpdateRecovery2Send(element, *a.Alert, users, recoverInfo.Id, recoverInfo.Count, recoverInfo.Hostname)
-					}
+				var userGroupList []common.UserGroup
+				var planId struct {
+					PlanId  int64
+					Summary string
 				}
+				Ormer().Raw("SELECT plan_id,summary FROM rule WHERE id=?", a.ruleId).QueryRow(&planId)
+				if _, ok := cache[planId.PlanId]; !ok {
+					Ormer().Raw("SELECT id,start_time,end_time,start,period,reverse_polish_notation,user,`group`,duty_group,method FROM plan_receiver WHERE plan_id=? AND (method='LANXIN' OR method LIKE 'HOOK %')", planId.PlanId).QueryRows(&userGroupList)
+					cache[planId.PlanId] = userGroupList
+				}
+				for _, element := range cache[planId.PlanId] {
+
+					if !(element.IsValid() && element.IsOnDuty()) {
+						continue
+					}
+
+					if !(recoverInfo.Count >= element.Start) {
+						continue
+					}
+
+					if ok := shouldSend(recoverInfo.Id, a.ruleId, recoverInfo.Count, element); !ok {
+						continue
+					}
+
+					if element.ReversePolishNotation != "" && !common.CalculateReversePolishNotation(a.Labels, element.ReversePolishNotation) {
+						continue
+					}
+
+					// merge users
+					users := SendAlertsFor(&common.ValidUserGroup{
+						User:      element.User,
+						Group:     element.Group,
+						DutyGroup: element.DutyGroup,
+					})
+
+					// update Recover2Send, other goroutines in timer.go will handle it
+					common.UpdateRecovery2Send(element, *a.Alert, users, recoverInfo.Id, recoverInfo.Count, recoverInfo.Hostname)
+				}
+
 				common.Rw.RUnlock()
 				o.Commit()
 			} else {
 				o.Rollback()
-				//logs.Alertloger.Error("models.AlertsHandler alertsrecover sql error:%s", err.Error())
 			}
 		}
 		o.Commit()
 	} else {
 		o.Rollback()
-		Ormer().Raw("UPDATE alert SET status=?,summary=?,description=?,value=?,resolved_at=? WHERE id=?", a.State, a.Annotations.Summary, a.Annotations.Description, a.Value, a.ResolvedAt, recoverInfo.Id).Exec() //if exceed the max waiting time for getting the lock
+		Ormer().Raw("UPDATE alert SET status=?,summary=?,description=?,value=?,resolved_at=? WHERE id=?", a.State, a.Annotations["summary"], a.Annotations["description"], a.Value, a.ResolvedAt, recoverInfo.Id).Exec() //if exceed the max waiting time for getting the lock
 	}
+}
+
+func AnnotationAddRuleId(alerts []common.Alert) common.Alerts {
+	var (
+		id     int64
+		status uint8
+		result []common.Alert
+	)
+	for _, a := range alerts {
+		q := &alertForQuery{Alert: &a}
+		q.setFields()
+		err := Ormer().Raw("SELECT id,status FROM alert WHERE rule_id =? AND labels=? AND fired_at=?", q.ruleId, q.label, q.firedAt).QueryRow(&id, &status)
+		if err != nil {
+			logs.Error("Query alert failed:%s", err)
+			continue
+		}
+		a.Annotations["alert_id"] = fmt.Sprintf("%d", id)
+		result = append(result, a)
+	}
+	return common.Alerts(result)
+}
+
+// Load alerts to alertmanger alerts from database
+func LoadAlerts(alertsStore *mem.Alerts) error {
+	o := Ormer()
+	var alerts []*Alerts
+
+	o.QueryTable(new(Alerts)).Filter("status", common.AlertStatusFiring).All(&alerts)
+
+	for _, alert := range alerts {
+		err := alertsStore.Put(alert.ToTypesAlert())
+		if err != nil {
+			return err
+		}
+		logs.Debug("Load alert %s to alertmanager", alert.Labels)
+	}
+	return nil
+}
+
+func (a *Alerts) ToTypesAlert() *types.Alert {
+	typesAlert := &types.Alert{}
+	typesAlert.Labels = common.MapToLabalSet(getLabelMap(a.Labels))
+	typesAlert.Annotations = model.LabelSet{
+		"summary":     model.LabelValue(a.Summary),
+		"description": model.LabelValue(a.Description),
+		"rule_id":     model.LabelValue(fmt.Sprintf("%d", a.Id)),
+	}
+	typesAlert.StartsAt = *a.FiredAt
+	typesAlert.EndsAt = *a.ResolvedAt
+	typesAlert.UpdatedAt = time.Now()
+	typesAlert.Timeout = false
+	return typesAlert
 }

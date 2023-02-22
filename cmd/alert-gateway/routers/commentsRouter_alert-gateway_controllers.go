@@ -169,49 +169,6 @@ func init() {
 		},
 	}
 
-	beego.GlobalControllerRouter[baseControllers+":MaintainController"] = []beego.ControllerComments{
-		{
-			Method:           "GetAllMaintains",
-			Router:           `/`,
-			AllowHTTPMethods: []string{"get"},
-			MethodParams:     param.Make(),
-			Filters:          nil,
-			Params:           nil,
-		},
-		{
-			Method:           "AddMaintain",
-			Router:           `/`,
-			AllowHTTPMethods: []string{"post"},
-			MethodParams:     param.Make(),
-			Filters:          nil,
-			Params:           nil,
-		},
-		{
-			Method:           "UpdateMaintain",
-			Router:           `/:id`,
-			AllowHTTPMethods: []string{"put"},
-			MethodParams:     param.Make(),
-			Filters:          nil,
-			Params:           nil,
-		},
-		{
-			Method:           "DeleteMaintain",
-			Router:           `/:id`,
-			AllowHTTPMethods: []string{"delete"},
-			MethodParams:     param.Make(),
-			Filters:          nil,
-			Params:           nil,
-		},
-		{
-			Method:           "GetHosts",
-			Router:           `/:id/hosts`,
-			AllowHTTPMethods: []string{"get"},
-			MethodParams:     param.Make(),
-			Filters:          nil,
-			Params:           nil,
-		},
-	}
-
 	beego.GlobalControllerRouter[baseControllers+":ManageController"] = []beego.ControllerComments{
 		{
 			Method:           "GetAll",
@@ -416,6 +373,84 @@ func init() {
 			Method:           "DeleteUsers",
 			Router:           `/:id`,
 			AllowHTTPMethods: []string{"delete"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+	}
+
+	beego.GlobalControllerRouter[baseControllers+":InhibitsController"] = []beego.ControllerComments{
+		{
+			Method:           "GetInhibitLogs",
+			Router:           `/logs`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+		{
+			Method:           "AddInhibitRule",
+			Router:           `/`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+		{
+			Method:           "DeleteInhibitRule",
+			Router:           `/:id`,
+			AllowHTTPMethods: []string{"delete"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+		{
+			Method:           "GetInhibitRules",
+			Router:           `/`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+		{
+			Method:           "UpdateInhibitRule",
+			Router:           `/:id`,
+			AllowHTTPMethods: []string{"put"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+	}
+
+	beego.GlobalControllerRouter[baseControllers+":SilenceController"] = []beego.ControllerComments{
+		{
+			Method:           "GetSilences",
+			Router:           `/`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+		{
+			Method:           "AddSilence",
+			Router:           `/`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+		{
+			Method:           "DeleteSilence",
+			Router:           `/:id`,
+			AllowHTTPMethods: []string{"delete"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil,
+		},
+		{
+			Method:           "UpdateSilence",
+			Router:           `/:id`,
+			AllowHTTPMethods: []string{"put"},
 			MethodParams:     param.Make(),
 			Filters:          nil,
 			Params:           nil,

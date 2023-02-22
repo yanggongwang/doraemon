@@ -1,0 +1,300 @@
+2023/02/17 10:25:12.245 [I] [controller.go:218]  admin /api/v1/proms POST {1 test http://172.20.4.209:29090/}
+2023/02/17 10:25:30.104 [I] [controller.go:218]  admin /api/v1/plans POST {1  test}
+2023/02/17 11:20:58.469 [E] [rule.go:124]  Unmarshal rule error:json: cannot unmarshal array into Go struct field Rules.labels of type string
+2023/02/17 11:47:08.603 [E] [rule.go:112]  Unmarshal rule error:json: cannot unmarshal array into Go struct field Rules.labels of type string
+2023/02/17 14:30:40.365 [I] [controller.go:218]  admin /api/v1/proms POST {1 test http://172.20.4.209:29090/}
+2023/02/17 14:30:45.168 [I] [controller.go:218]  admin /api/v1/plans POST {1  test}
+2023/02/17 14:31:20.000 [E] [rule.go:113]  Unmarshal rule error:json: cannot unmarshal array into Go struct field Rule.labels of type map[string]string
+2023/02/17 14:31:20.380 [E] [rule.go:113]  Unmarshal rule error:json: cannot unmarshal array into Go struct field Rule.labels of type map[string]string
+2023/02/17 14:36:17.603 [E] [rule.go:113]  Unmarshal rule error:json: cannot unmarshal array into Go struct field Rule.labels of type map[string]string
+2023/02/17 14:42:41.017 [I] [rule.go:121]  rule.Labels: 
+2023/02/17 14:44:17.671 [I] [rule.go:121]  rule.Labels: 
+2023/02/17 14:45:57.420 [I] [rule.go:121]  rule.Labels: level=warning
+2023/02/17 14:46:29.242 [I] [rule.go:121]  rule.Labels: level=warning
+2023/02/17 15:06:22.258 [I] [controller.go:218]  admin /api/v1/rules/5 DELETE 5
+2023/02/17 17:00:55.176 [I] [controller.go:218]  admin /api/v1/rules/6 PUT 6
+2023/02/17 17:01:10.339 [I] [controller.go:218]  admin /api/v1/rules/6 PUT 6
+2023/02/17 17:01:30.437 [I] [controller.go:218]  admin /api/v1/rules/6 PUT 6
+2023/02/17 17:04:26.881 [I] [controller.go:218]  admin /api/v1/rules/6 PUT 6
+2023/02/17 17:05:39.111 [I] [controller.go:218]  %!s(<nil>) /api/v1/rules/6 PUT 6
+2023/02/17 17:05:51.729 [I] [controller.go:218]  %!s(<nil>) /api/v1/rules/6 PUT 6
+2023/02/17 17:17:08.897 [I] [controller.go:218]  %!s(<nil>) /api/v1/rules/6 DELETE 6
+2023/02/17 17:49:56.408 [I] [controller.go:218]  admin /api/v1/rules/7 PUT 7
+2023/02/17 17:58:37.992 [I] [controller.go:218]  admin /api/v1/rules/8 PUT 8
+2023/02/17 18:58:00.374 [D] [inhibit_log.go:47]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 18:58:00.379 [D] [inhibit_log.go:47]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 18:59:00.379 [D] [inhibit_log.go:47]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 18:59:00.383 [D] [inhibit_log.go:47]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:06:00.798 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:06:00.798 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:06:00.802 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:06:00.802 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:06:00.804 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:06:00.804 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:07:00.798 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:07:00.800 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:07:00.804 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:07:00.804 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:07:00.805 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:07:00.805 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:08:00.804 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:08:00.805 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:08:00.812 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:08:00.813 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:08:00.817 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:08:00.817 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:09:00.796 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:09:00.796 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:09:00.799 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:09:00.799 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:09:00.800 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:09:00.800 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:10:00.806 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:10:00.808 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:10:00.814 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:10:00.814 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:10:00.819 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:10:00.820 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:11:00.806 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:11:00.807 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:11:00.810 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:11:00.810 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:11:00.812 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:11:00.812 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:12:00.808 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:12:00.810 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:12:00.815 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:12:00.815 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/17 19:12:00.821 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 19, 2023-02-17 19:04:33.691615382 +0800 CST
+2023/02/17 19:12:00.821 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:45:00.465 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:45:00.467 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:45:00.471 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:45:00.471 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:45:00.472 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:45:00.472 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:45:00.474 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:45:00.474 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:46:00.468 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:46:00.470 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:46:00.476 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:46:00.476 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:46:00.480 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:46:00.480 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:46:00.483 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:46:00.483 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:47:00.464 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:47:00.466 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:47:00.469 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:47:00.469 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:47:00.471 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:47:00.471 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:47:00.472 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:47:00.472 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:48:00.463 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:48:00.465 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:48:00.467 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:48:00.467 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:48:00.468 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:48:00.468 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:48:00.469 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:48:00.469 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:49:00.466 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:49:00.468 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:49:00.471 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:49:00.471 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:49:00.472 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:49:00.472 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:49:00.473 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:49:00.473 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:50:00.473 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:50:00.475 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:50:00.484 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:50:00.484 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:50:00.488 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:50:00.488 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:50:00.491 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:50:00.491 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:51:00.478 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:51:00.480 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:51:00.485 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:51:00.485 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:51:00.489 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:51:00.489 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:51:00.493 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:51:00.493 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:52:00.476 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:52:00.479 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:52:00.485 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:52:00.485 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:52:00.490 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:52:00.490 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:52:00.505 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:52:00.506 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:53:00.482 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:53:00.484 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:53:00.486 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:53:00.486 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:53:00.487 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:53:00.487 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:53:00.489 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:53:00.489 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:54:00.469 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:54:00.470 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:54:00.472 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:54:00.472 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:54:00.474 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:54:00.474 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:54:00.476 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:54:00.476 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:55:00.477 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:55:00.477 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:55:00.480 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:55:00.480 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:55:00.481 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:55:00.481 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:55:00.482 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:55:00.482 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:56:00.470 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:56:00.471 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:56:00.474 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:56:00.474 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:56:00.475 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:56:00.475 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:56:00.476 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03.691615382 +0800 CST
+2023/02/20 09:56:00.476 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:58:00.538 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:58:00.539 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:58:00.543 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:58:00.543 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:58:00.545 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:58:00.545 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:58:00.547 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:58:00.547 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:59:00.545 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:59:00.545 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:59:00.549 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:59:00.549 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:59:00.551 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:59:00.551 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 09:59:00.553 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 09:59:00.553 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:00:00.548 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:00:00.549 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:00:00.552 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:00:00.552 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:00:00.553 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:00:00.553 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:00:00.554 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:00:00.554 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:06:00.084 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:06:00.084 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:06:00.093 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:06:00.093 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:06:00.098 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:06:00.098 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:06:00.100 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:06:00.100 [D] [inhibit_log.go:48]  InhibitLog Exists: <QuerySeter> no row found
+2023/02/20 10:07:00.093 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:07:00.093 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:07:00.094 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:07:00.094 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:08:00.080 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:08:00.080 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:08:00.081 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:08:00.081 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:09:00.105 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:09:00.107 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:09:00.110 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:09:00.112 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:10:00.093 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:10:00.097 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:10:00.099 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:10:00.103 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:11:00.114 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:11:00.114 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:11:00.114 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:11:00.115 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:12:00.093 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:12:00.095 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:12:00.097 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:12:00.099 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:13:00.102 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:13:00.104 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:13:00.106 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:13:00.108 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:14:00.097 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:14:00.098 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:14:00.101 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:14:00.102 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:15:00.098 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:15:00.099 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:15:00.100 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:15:00.101 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:16:00.042 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:16:00.046 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:16:00.050 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:16:00.050 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:17:00.040 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:17:00.041 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:17:00.042 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:17:00.042 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:18:00.037 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 12, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:18:00.040 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 15, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:18:00.041 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 18, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 10:18:00.041 [D] [inhibit_log.go:43]  InhibitLog.Exists(alert_id, sources, trigger_time): 21, 22, 2023-02-20 09:44:03 +0800 CST
+2023/02/20 14:59:19.877 [E] [slience.go:30]  Unmarshal slience error:parsing time "\"2023-02-20 14:55:00\"" as "\"2006-01-02T15:04:05Z07:00\"": cannot parse " 14:55:00\"" as "T"
+2023/02/20 15:01:14.402 [E] [sliences.go:38]  Insert slience error:Error 1146: Table 'doraemon.slience' doesn't exist
+2023/02/20 15:01:14.402 [E] [slience.go:39]  Insert slience error:database insert error: Error 1146: Table 'doraemon.slience' doesn't exist
+2023/02/20 16:45:00.609 [E] [silences.go:48]  Insert slience error:Error 1048: Column 'starts_at' cannot be null
+2023/02/20 16:45:00.610 [E] [slience.go:39]  Insert slience error:database insert error: Error 1048: Column 'starts_at' cannot be null
+2023/02/20 16:49:00.589 [E] [silences.go:155]  silences add, uuid: 
+2023/02/20 16:49:00.589 [E] [silences.go:157]  Set silence error: silence not found
+2023/02/20 16:50:30.949 [E] [silences.go:149]  silences add, uuid: 64702f36-f02b-4202-951e-33f5a53335a0
+2023/02/20 16:55:58.060 [E] [silences.go:157]  silences add, uuid: 12181cbc-10a1-41e8-b950-c813557efa4d
+2023/02/20 16:58:57.135 [E] [silences.go:157]  silences add, uuid: 699b44a7-7212-47e5-9e3d-f6b2992858da
+2023/02/21 15:24:10.125 [E] [silences.go:44]  Insert silence error:Error 1048: Column 'starts_at' cannot be null
+2023/02/21 15:24:10.126 [E] [silence.go:39]  Insert silence error:database insert error: Error 1048: Column 'starts_at' cannot be null
+2023/02/21 15:25:46.527 [E] [silences.go:44]  Insert silence error:Error 1048: Column 'starts_at' cannot be null
+2023/02/21 15:25:46.528 [E] [silence.go:39]  Insert silence error:database insert error: Error 1048: Column 'starts_at' cannot be null
+2023/02/21 15:27:19.891 [E] [silences.go:44]  Insert silence error:Error 1048: Column 'starts_at' cannot be null
+2023/02/21 15:27:19.891 [E] [silence.go:39]  Insert silence error:database insert error: Error 1048: Column 'starts_at' cannot be null
+2023/02/21 16:31:48.454 [E] [silences.go:89]  Update silence to alertmanager error:silence invalid: at least one matcher required
+2023/02/21 16:31:48.454 [E] [silence.go:129]  Update silence error:Update silence error: silence invalid: at least one matcher required
+2023/02/21 16:32:47.460 [E] [silences.go:89]  Update silence to alertmanager error:silence invalid: at least one matcher required
+2023/02/21 16:32:47.460 [E] [silence.go:129]  Update silence error:Update silence error: silence invalid: at least one matcher required
+2023/02/21 16:35:13.976 [E] [silences.go:230]  silence matchers: []
+2023/02/21 16:35:13.977 [E] [silences.go:89]  Update silence to alertmanager error:silence invalid: at least one matcher required
+2023/02/21 16:35:13.977 [E] [silence.go:129]  Update silence error:Update silence error: silence invalid: at least one matcher required
+2023/02/21 16:37:45.938 [E] [silences.go:225]  silence id: 0
+2023/02/21 16:37:45.938 [E] [silences.go:226]  silence uuid: c0f9a732-e805-41bf-923a-6f807d08d9a6
+2023/02/21 16:37:45.939 [E] [silences.go:232]  silence matchers: []
+2023/02/21 16:37:45.939 [E] [silences.go:89]  Update silence to alertmanager error:silence invalid: at least one matcher required
+2023/02/21 16:37:45.939 [E] [silence.go:129]  Update silence error:Update silence error: silence invalid: at least one matcher required
+2023/02/21 16:40:00.259 [D] [silences.go:81]  Id: 8
+2023/02/21 16:40:00.260 [D] [silences.go:83]  After Update Id: 8
+2023/02/21 16:40:00.261 [E] [silences.go:227]  silence id: 0
+2023/02/21 16:40:00.261 [E] [silences.go:228]  silence uuid: abb0ca5c-5cc5-43af-87a3-81559b5f0890
+2023/02/21 16:40:00.262 [E] [silences.go:234]  silence matchers: []
+2023/02/21 16:40:00.262 [E] [silences.go:91]  Update silence to alertmanager error:silence invalid: at least one matcher required
+2023/02/21 16:40:00.262 [E] [silence.go:129]  Update silence error:Update silence error: silence invalid: at least one matcher required
+2023/02/21 16:41:43.278 [D] [silences.go:81]  Id: 8
+2023/02/21 16:41:43.279 [D] [silences.go:83]  After Update Id: 8
+2023/02/21 16:43:29.260 [D] [silences.go:81]  Id: 8
+2023/02/21 16:43:29.261 [D] [silences.go:83]  After Update Id: 8
+2023/02/21 16:43:29.262 [E] [silences.go:228]  silence id: 0
+2023/02/21 16:43:29.262 [E] [silences.go:229]  silence uuid: 21efb063-52be-4b84-a99a-79a306e70212
+2023/02/21 16:43:29.263 [E] [silences.go:235]  silence matchers: [0xc0000f29c0 0xc0000f2a00]
+2023/02/21 16:43:29.263 [E] [silences.go:91]  Update silence to alertmanager error:silence invalid: invalid zero end timestamp
+2023/02/21 16:43:29.263 [E] [silence.go:129]  Update silence error:Update silence error: silence invalid: invalid zero end timestamp
+2023/02/21 16:45:43.476 [D] [silences.go:81]  Id: 8
+2023/02/21 16:45:43.477 [D] [silences.go:83]  After Update Id: 8
+2023/02/21 16:45:43.480 [E] [silences.go:233]  silence matchers: [0xc0000fbd80 0xc0000fbdc0]
+2023/02/22 10:00:21.047 [D] [alerts.go:547]  Load alert appmiyuan-goods-center-turn-project to alertmanager
+2023/02/22 10:00:21.047 [D] [alerts.go:547]  Load alert appgoods-storage-project to alertmanager
+2023/02/22 10:01:06.272 [D] [alerts.go:547]  Load alert appmiyuan-goods-center-turn-project to alertmanager
+2023/02/22 10:01:06.272 [D] [alerts.go:547]  Load alert appgoods-storage-project to alertmanager
+2023/02/22 10:02:06.533 [D] [alerts.go:536]  Load alert appmiyuan-goods-center-turn-project to alertmanager
+2023/02/22 10:02:06.533 [D] [alerts.go:536]  Load alert appgoods-storage-project to alertmanager
+2023/02/22 10:03:59.662 [D] [alerts.go:536]  Load alert appmiyuan-goods-center-turn-project to alertmanager
+2023/02/22 10:03:59.662 [D] [alerts.go:536]  Load alert appgoods-storage-project to alertmanager

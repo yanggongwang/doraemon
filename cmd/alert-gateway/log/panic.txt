@@ -1,0 +1,117 @@
+2023/02/17 19:05:00.929 [E] [panic.go:844]  Panic in timer:<RawSeter.QueryRow> all args must be use ptr
+goroutine 70 [running]:
+doraemon/cmd/alert-gateway/initial.Timer.func2.1.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:232 +0x64
+panic({0x101f879c0, 0xc0002fe9e0})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/runtime/panic.go:844 +0x258
+github.com/astaxie/beego/orm.(*rawSet).QueryRow(0xc0005a3b60, {0xc0002fe990, 0x1, 0xc0005a2cf0?})
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:290 +0x16fc
+doraemon/cmd/alert-gateway/models.(*InhibitLog).Exists(0xc0003a8a50)
+	/Users/zero/code/doraemon/cmd/alert-gateway/models/inhibit_log.go:42 +0x238
+doraemon/cmd/alert-gateway/initial.toInhibitUseAlertmanager({0xc00001c000, 0x9, 0x1?})
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:299 +0x6d0
+doraemon/cmd/alert-gateway/initial.Timer.func2.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:243 +0x28c
+created by doraemon/cmd/alert-gateway/initial.Timer.func2
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:228 +0x30
+
+2023/02/20 10:01:00.552 [E] [panic.go:844]  Panic in timer:reflect.Set: value of type []int64 is not assignable to type int64
+goroutine 159 [running]:
+doraemon/cmd/alert-gateway/initial.Timer.func2.1.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:232 +0x64
+panic({0x1020d80a0, 0xc0005b0100})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/runtime/panic.go:844 +0x258
+reflect.Value.assignTo({0x1020cbd00?, 0xc00000e168?, 0xc00000e0c0?}, {0x1011c7604, 0xb}, 0x1020d7420, 0x0)
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:3064 +0x294
+reflect.Value.Set({0x1020d7420?, 0xc000180028?, 0xc000562ea8?}, {0x1020cbd00?, 0xc00000e168?, 0x10096a58c?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2090 +0xb8
+reflect.Append({0x1020cbd00?, 0xc00000e0c0?, 0xc00000e168?}, {0xc0005630a0, 0x1, 0x1026a6298?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2659 +0xc0
+github.com/astaxie/beego/orm.(*rawSet).loopSetRefs(0xc000718100?, {0xc0005b0000, 0x1, 0xc00004f240?}, {0xc00000e558, 0x1, 0x1000?}, 0xc000563480, {0xc0005b0020, 0x1, ...}, ...)
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:262 +0x758
+github.com/astaxie/beego/orm.(*rawSet).QueryRow(0xc0008306f0, {0xc00011bf30, 0x1, 0xc000830690?})
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:396 +0x4c4
+doraemon/cmd/alert-gateway/models.(*InhibitLog).Exists(0xc0005a76d0)
+	/Users/zero/code/doraemon/cmd/alert-gateway/models/inhibit_log.go:42 +0x260
+doraemon/cmd/alert-gateway/initial.toInhibitUseAlertmanager({0xc0005b8a00, 0xc, 0x1?})
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:299 +0x660
+doraemon/cmd/alert-gateway/initial.Timer.func2.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:243 +0x28c
+created by doraemon/cmd/alert-gateway/initial.Timer.func2
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:228 +0x30
+
+2023/02/20 10:02:50.876 [E] [panic.go:844]  Panic in timer:reflect.Set: value of type []int64 is not assignable to type int64
+goroutine 202 [running]:
+doraemon/cmd/alert-gateway/initial.Timer.func2.1.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:232 +0x64
+panic({0x1020d80a0, 0xc000033110})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/runtime/panic.go:844 +0x258
+reflect.Value.assignTo({0x1020cbd00?, 0xc0005e1530?, 0xc0005e1398?}, {0x1011c7604, 0xb}, 0x1020d7420, 0x0)
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:3064 +0x294
+reflect.Value.Set({0x1020d7420?, 0xc000386318?, 0xc0000faea8?}, {0x1020cbd00?, 0xc0005e1530?, 0x10096a58c?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2090 +0xb8
+reflect.Append({0x1020cbd00?, 0xc0005e1398?, 0xc0005e1530?}, {0xc0000fb0a0, 0x1, 0x1026a6298?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2659 +0xc0
+github.com/astaxie/beego/orm.(*rawSet).loopSetRefs(0xc0000d6100?, {0xc000033060, 0x1, 0xc00004f700?}, {0xc0005e1038, 0x1, 0x1000?}, 0xc0000fb480, {0xc000033070, 0x1, ...}, ...)
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:262 +0x758
+github.com/astaxie/beego/orm.(*rawSet).QueryRow(0xc00085d140, {0xc000033050, 0x1, 0xc00085d110?})
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:396 +0x4c4
+doraemon/cmd/alert-gateway/models.(*InhibitLog).Exists(0xc0005a7310)
+	/Users/zero/code/doraemon/cmd/alert-gateway/models/inhibit_log.go:42 +0x260
+doraemon/cmd/alert-gateway/initial.toInhibitUseAlertmanager({0xc000382000, 0xc, 0x1?})
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:299 +0x660
+doraemon/cmd/alert-gateway/initial.Timer.func2.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:243 +0x28c
+created by doraemon/cmd/alert-gateway/initial.Timer.func2
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:228 +0x30
+
+2023/02/20 10:03:51.304 [E] [panic.go:844]  Panic in timer:reflect.Set: value of type []int64 is not assignable to type int64
+goroutine 208 [running]:
+doraemon/cmd/alert-gateway/initial.Timer.func2.1.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:232 +0x64
+panic({0x1020d80a0, 0xc000357ef0})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/runtime/panic.go:844 +0x258
+reflect.Value.assignTo({0x1020cbd00?, 0xc000859d28?, 0xc000859d10?}, {0x1011c7604, 0xb}, 0x1020d7420, 0x0)
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:3064 +0x294
+reflect.Value.Set({0x1020d7420?, 0xc00058eeb8?, 0xc0003b8ea8?}, {0x1020cbd00?, 0xc000859d28?, 0x10096a58c?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2090 +0xb8
+reflect.Append({0x1020cbd00?, 0xc000859d10?, 0xc000859d28?}, {0xc0003b90a0, 0x1, 0x1026a6298?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2659 +0xc0
+github.com/astaxie/beego/orm.(*rawSet).loopSetRefs(0xc0001f1900?, {0xc000357e00, 0x1, 0xc0002b0b80?}, {0xc000859cb0, 0x1, 0x1000?}, 0xc0003b9480, {0xc000357e10, 0x1, ...}, ...)
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:262 +0x758
+github.com/astaxie/beego/orm.(*rawSet).QueryRow(0xc00085c2d0, {0xc000357df0, 0x1, 0xc00085c2a0?})
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:396 +0x4c4
+doraemon/cmd/alert-gateway/models.(*InhibitLog).Exists(0xc0002b4fa0)
+	/Users/zero/code/doraemon/cmd/alert-gateway/models/inhibit_log.go:42 +0x260
+doraemon/cmd/alert-gateway/initial.toInhibitUseAlertmanager({0xc00064f500, 0xc, 0x1?})
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:299 +0x660
+doraemon/cmd/alert-gateway/initial.Timer.func2.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:243 +0x28c
+created by doraemon/cmd/alert-gateway/initial.Timer.func2
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:228 +0x30
+
+2023/02/20 10:04:51.460 [E] [panic.go:844]  Panic in timer:reflect.Set: value of type []int64 is not assignable to type int64
+goroutine 232 [running]:
+doraemon/cmd/alert-gateway/initial.Timer.func2.1.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:232 +0x64
+panic({0x1020d80a0, 0xc0005cb360})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/runtime/panic.go:844 +0x258
+reflect.Value.assignTo({0x1020cbd00?, 0xc0001a66c0?, 0xc0001a6588?}, {0x1011c7604, 0xb}, 0x1020d7420, 0x0)
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:3064 +0x294
+reflect.Value.Set({0x1020d7420?, 0xc0005c5cb8?, 0xc0003a6ea8?}, {0x1020cbd00?, 0xc0001a66c0?, 0x10096a58c?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2090 +0xb8
+reflect.Append({0x1020cbd00?, 0xc0001a6588?, 0xc0001a66c0?}, {0xc0003a70a0, 0x1, 0x1026a6298?})
+	/Users/zero/.asdf/installs/golang/1.18.9/go/src/reflect/value.go:2659 +0xc0
+github.com/astaxie/beego/orm.(*rawSet).loopSetRefs(0xc000679a80?, {0xc0005cafa0, 0x1, 0xc000672b80?}, {0xc0001a6408, 0x1, 0x1000?}, 0xc0003a7480, {0xc0005cafe0, 0x1, ...}, ...)
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:262 +0x758
+github.com/astaxie/beego/orm.(*rawSet).QueryRow(0xc0005c7110, {0xc0005caf60, 0x1, 0xc0005c70e0?})
+	/Users/zero/.asdf/installs/golang/1.18.9/packages/pkg/mod/github.com/astaxie/beego@v1.12.1/orm/orm_raw.go:396 +0x4c4
+doraemon/cmd/alert-gateway/models.(*InhibitLog).Exists(0xc0002b5b80)
+	/Users/zero/code/doraemon/cmd/alert-gateway/models/inhibit_log.go:42 +0x260
+doraemon/cmd/alert-gateway/initial.toInhibitUseAlertmanager({0xc000586700, 0xc, 0x1?})
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:299 +0x660
+doraemon/cmd/alert-gateway/initial.Timer.func2.1()
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:243 +0x28c
+created by doraemon/cmd/alert-gateway/initial.Timer.func2
+	/Users/zero/code/doraemon/cmd/alert-gateway/initial/timer.go:228 +0x30
+

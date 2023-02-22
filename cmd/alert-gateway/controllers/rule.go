@@ -25,26 +25,17 @@ func (c *RuleController) URLMapping() {
 }
 
 type Rule struct {
-	Id          int64  `json:"id"`
-	Expr        string `json:"expr"`
-	Op          string `json:"op"`
-	Value       string `json:"value"`
-	For         string `json:"for"`
-	Summary     string `json:"summary"`
-	Description string `json:"description"`
-	PromId      int64  `json:"prom_id"`
-	PlanId      int64  `json:"plan_id"`
-}
-
-var rule struct {
-	Expr        string `json:"expr"`
-	For         string `json:"for"`
-	Op          string `json:"op"`
-	Value       string `json:"value"`
-	Summary     string `json:"summary"`
-	Description string `json:"description"`
-	PromId      int64  `json:"prom_id"`
-	PlanId      int64  `json:"plan_id"`
+	Id          int64             `json:"id,omitempty"`
+	Expr        string            `json:"expr"`
+	Op          string            `json:"op"`
+	Value       string            `json:"value"`
+	For         string            `json:"for"`
+	Alert       string            `json:"alert"`
+	Labels      map[string]string `json:"labels,omitempty"`
+	Summary     string            `json:"summary"`
+	Description string            `json:"description"`
+	PromId      int64             `json:"prom_id"`
+	PlanId      int64             `json:"plan_id"`
 }
 
 // @router /getall [get]
@@ -69,6 +60,8 @@ func (c *RuleController) GetAllRules() {
 			Expr:        i.Expr,
 			Op:          i.Op,
 			Value:       i.Value,
+			Alert:       i.Alert,
+			Labels:      common.ConvertStringToLabelMap(i.Labels),
 			For:         i.For,
 			Summary:     i.Summary,
 			Description: i.Description,
@@ -113,22 +106,32 @@ func (c *RuleController) AddRule() {
 		}
 	}()
 	var ruleModel models.Rules
+	var rule Rule
 	var ans common.Res
 
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, &ruleModel)
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &rule)
 	if err != nil {
 		logs.Error("Unmarshal rule error:%v", err)
 		ans.Code = 1
 		ans.Msg = "Unmarshal error"
 	} else {
 		ruleModel.Id = 0 //reset the "Id" to 0,which is very important:after a record is inserted,the value of "Id" will not be 0,but the auto primary key of the record
+		ruleModel.Expr = rule.Expr
+		ruleModel.Op = rule.Op
+		ruleModel.Value = rule.Value
+		ruleModel.Alert = rule.Alert
+		ruleModel.Labels = common.ConvertLabelMapToString(rule.Labels)
+		ruleModel.For = rule.For
+		ruleModel.Description = rule.Description
+		ruleModel.Summary = rule.Summary
+		ruleModel.PromId = rule.PromId
+		ruleModel.PlanId = rule.PlanId
 
 		err = ruleModel.InsertRule()
 		if err != nil {
 			ans.Code = 1
 			ans.Msg = err.Error()
 		}
-		logs.Logger.Info("%s %s %s %v", c.Ctx.Request.RequestURI, c.Ctx.Request.Method, rule)
 	}
 
 	c.Data["json"] = &ans
@@ -139,17 +142,8 @@ func (c *RuleController) AddRule() {
 func (c *RuleController) UpdateRule() {
 	ruleId := c.Ctx.Input.Param(":ruleid")
 	var ruleModel models.Rules
-	var rule struct {
-		Expr        string `json:"expr"`
-		Op          string `json:"op"`
-		Value       string `json:"value"`
-		For         string `json:"for"`
-		Summary     string `json:"summary"`
-		Description string `json:"description"`
-		PromId      int64  `json:"prom_id"`
-		PlanId      int64  `json:"plan_id"`
-	}
 	var ans common.Res
+	var rule Rule
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &rule)
 	if err != nil {
 		logs.Error("Unmarshal rule error:%v", err)
@@ -161,6 +155,8 @@ func (c *RuleController) UpdateRule() {
 		ruleModel.Expr = rule.Expr
 		ruleModel.Op = rule.Op
 		ruleModel.Value = rule.Value
+		ruleModel.Alert = rule.Alert
+		ruleModel.Labels = common.ConvertLabelMapToString(rule.Labels)
 		ruleModel.For = rule.For
 		ruleModel.Description = rule.Description
 		ruleModel.Summary = rule.Summary

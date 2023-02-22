@@ -95,7 +95,7 @@ def alert():
     envname = os.getenv('envname')
     url = os.getenv('dingtalk_url')
     secret = os.getenv('secret') 
-    del_labeles=['heritage','chart','component','app','helm_sh_chart','app_kubernetes_io_managed_by','app_kubernetes_io_instance','kubernetes_node','app_kubernetes_io_name','kubernetes_name','job','release','kubernetes_namespace']
+    del_labeles=['heritage','chart','component','app','helm_sh_chart','app_kubernetes_io_managed_by','app_kubernetes_io_instance','kubernetes_node','app_kubernetes_io_name','kubernetes_name']
     student = request.data.decode('utf-8')
     # 获取到POST过来的数据，因为我这里传过来的数据需要转换一下编码。根据晶具体情况而定
     dictss = json.loads(student)

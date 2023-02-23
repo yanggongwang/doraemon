@@ -69,7 +69,6 @@ func Filter(alerts map[int64][]Record, maxCount map[int64]int) map[string][]comm
 		common.AlertMethodSms:    {},
 		common.AlertMethodLanxin: {},
 		common.AlertMethodCall:   {},
-		//"HOOK":   []common.Ready2Send{},
 	}
 	Cache := map[int64][]common.UserGroup{}
 	NewRuleCount := map[[2]int64]int64{}
@@ -125,7 +124,6 @@ func Filter(alerts map[int64][]Record, maxCount map[int64]int) map[string][]comm
 		}
 	}
 	common.RuleCount = NewRuleCount
-	//logs.Alertloger.Debug("RuleCount: %v", common.RuleCount)
 	return SendClass
 }
 

@@ -13,6 +13,10 @@ import (
 	"github.com/astaxie/beego"
 )
 
+var (
+	maxSendCount = 5
+)
+
 /*
  send alert if rule is triggered.
 */
@@ -23,7 +27,6 @@ func Sender(SendClass map[string][]common.Ready2Send, now string) {
 			go SendAll(k, "mis", map[string]string{"key": "6E358A78-0A5B-49D2-A12F-6A4EB07A9671"}, v, now)
 		case common.AlertMethodLanxin:
 			go SendAll(k, "StreeAlert", map[string]string{"key": "6E358A78-0A5B-49D2-A12F-6A4EB07A9671"}, v, now)
-			//logs.Alertloger.Info("[%s]%v:", now, v)
 		case common.AlertMethodCall:
 			go SendAll(k, "StreeAlert", map[string]string{"key": "6E358A78-0A5B-49D2-A12F-6A4EB07A9671"}, v, now)
 		default:
@@ -153,7 +156,7 @@ func Send2Hook(content []common.Ready2Send, sendTime string, t string, url strin
 				RuleId: i.RuleId,
 				Time:   sendTime,
 				To:     i.User,
-				Alerts: i.Alerts,
+				Alerts: i.Alerts[:maxSendCount],
 			})
 			common.HttpPost(url, nil, common.GenerateJsonHeader(), data)
 		}
@@ -165,7 +168,7 @@ func Send2Hook(content []common.Ready2Send, sendTime string, t string, url strin
 				Time:        sendTime,
 				ConfirmLink: beego.AppConfig.String("WebUrl") + "/alerts_confirm/" + strconv.FormatInt(i.RuleId, 10) + "?start=" + strconv.FormatInt(i.Start, 10),
 				To:          i.User,
-				Alerts:      i.Alerts,
+				Alerts:      i.Alerts[:maxSendCount],
 			})
 			common.HttpPost(url, nil, common.GenerateJsonHeader(), data)
 		}

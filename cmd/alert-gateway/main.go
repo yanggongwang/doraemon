@@ -125,7 +125,6 @@ func run() {
 			case <-ticker:
 				logs.Info("inhibitor reload")
 				inhibit.Inhibitor.Stop()
-				logger := promlog.New(&promlog.Config{})
 				inhibit.InhibitorLock.Lock()
 				inhibit.Inhibitor = inhibit.NewInhibitor(inhibit.AlertmanagerAlerts, initial.GetMarker(), logger)
 				inhibit.InhibitorLock.Unlock()

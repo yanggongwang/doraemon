@@ -58,8 +58,6 @@ func (c *RuleController) GetAllRules() {
 		res = append(res, Rule{
 			Id:          i.Id,
 			Expr:        i.Expr,
-			Op:          i.Op,
-			Value:       i.Value,
 			Alert:       i.Alert,
 			Labels:      common.ConvertStringToLabelMap(i.Labels),
 			For:         i.For,
@@ -117,8 +115,6 @@ func (c *RuleController) AddRule() {
 	} else {
 		ruleModel.Id = 0 //reset the "Id" to 0,which is very important:after a record is inserted,the value of "Id" will not be 0,but the auto primary key of the record
 		ruleModel.Expr = rule.Expr
-		ruleModel.Op = rule.Op
-		ruleModel.Value = rule.Value
 		ruleModel.Alert = rule.Alert
 		ruleModel.Labels = common.ConvertLabelMapToString(rule.Labels)
 		ruleModel.For = rule.For
@@ -153,8 +149,6 @@ func (c *RuleController) UpdateRule() {
 		id, _ := strconv.ParseInt(ruleId, 10, 64)
 		ruleModel.Id = id
 		ruleModel.Expr = rule.Expr
-		ruleModel.Op = rule.Op
-		ruleModel.Value = rule.Value
 		ruleModel.Alert = rule.Alert
 		ruleModel.Labels = common.ConvertLabelMapToString(rule.Labels)
 		ruleModel.For = rule.For

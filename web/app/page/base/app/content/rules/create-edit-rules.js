@@ -196,18 +196,6 @@ export default class CreateEditRules extends Component {
     const { visiable, promethusData, strategyData } = this.props;
     const { getFieldDecorator } = this.props.form;
     const { id } = this.state;
-    const selectBefore = getFieldDecorator("op", {
-      initialValue: ">",
-    })(
-      <Select style={{ width: 70 }}>
-        <Option value="==">==</Option>
-        <Option value="!=">!=</Option>
-        <Option value=">">&gt;</Option>
-        <Option value="<">&lt;</Option>
-        <Option value=">=">&gt;=</Option>
-        <Option value="<=">&lt;=</Option>
-      </Select>
-    );
     return (
       <Modal
         title={id ? "编辑报警规则管理" : "添加报警规则管理"}
@@ -217,26 +205,21 @@ export default class CreateEditRules extends Component {
         maskClosable={false}
       >
         <Form {...formItemLayout} layout="horizontal">
-          <Form.Item label="监控指标">
+          <Form.Item label="标题">
+            {getFieldDecorator("alert", {
+              rules: [{ required: true, message: "请输入标题" }],
+            })(<Input />)}
+          </Form.Item>
+          <Form.Item label="prom表达式">
             {getFieldDecorator("expr", {
               rules: [{ required: true, message: "请输入监控指标" }],
             })(<Input />)}
-          </Form.Item>
-          <Form.Item label="报警阈值">
-            {getFieldDecorator("value", {
-              rules: [{ required: true, message: "请输入报警阈值" }],
-            })(<Input addonBefore={selectBefore} />)}
           </Form.Item>
           <Form.Item label="持续时间">
             {getFieldDecorator("for", {
               initialValue: "0s",
               rules: [{ required: true, message: "请输入持续时间" }],
             })(<Input onChange={this.forChange} />)}
-          </Form.Item>
-          <Form.Item label="标题">
-            {getFieldDecorator("alert", {
-              rules: [{ required: true, message: "请输入标题" }],
-            })(<Input />)}
           </Form.Item>
           {this.getFields()}
           <Form.Item {...formItemLayoutWithOutLabel}>

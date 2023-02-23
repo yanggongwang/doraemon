@@ -12,8 +12,6 @@ import (
 type Rules struct {
 	Id          int64  `orm:"column(id);auto" json:"id,omitempty"`
 	Expr        string `orm:"column(expr);size(1023)" json:"expr"`
-	Op          string `orm:"column(op);size(31)" json:"op"`
-	Value       string `orm:"column(value);size(1023)" json:"value"`
 	For         string `orm:"column(for);size(1023)" json:"for"`
 	Alert       string `orm:"column(alert);size(1023)" json:"alert"`
 	Labels      string `orm:"column(labels);size(1023)" json:"labels"`

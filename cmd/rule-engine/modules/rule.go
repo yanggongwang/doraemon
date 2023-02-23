@@ -2,7 +2,6 @@ package modules
 
 import (
 	"strconv"
-	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -24,8 +23,6 @@ type Rule struct {
 	ID          int64             `json:"id"`
 	PromID      int64             `json:"prom_id"`
 	Expr        string            `json:"expr"`
-	Op          string            `json:"op"`
-	Value       string            `json:"value"`
 	Alert       string            `json:"alert"`
 	For         string            `json:"for"`
 	Labels      map[string]string `json:"labels"`
@@ -63,7 +60,7 @@ func (r Rules) Content() ([]byte, error) {
 		rules = append(rules, M{
 			// "alert":  strconv.FormatInt(i.ID, 10),
 			"alert":  i.Alert,
-			"expr":   strings.Join([]string{i.Expr, i.Op, i.Value}, " "),
+			"expr":   i.Expr,
 			"for":    i.For,
 			"labels": i.Labels,
 			"annotations": M{

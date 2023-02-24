@@ -151,24 +151,32 @@ func Send2Hook(content []common.Ready2Send, sendTime string, t string, url strin
 	}()
 	if t == "recover" {
 		for _, i := range content {
+			sendCount := len(i.Alerts)
+			if sendCount > maxSendCount {
+				sendCount = maxSendCount
+			}
 			data, _ := json.Marshal(hookRequest{
 				Type:   t,
 				RuleId: i.RuleId,
 				Time:   sendTime,
 				To:     i.User,
-				Alerts: i.Alerts[:maxSendCount],
+				Alerts: i.Alerts[:sendCount],
 			})
 			common.HttpPost(url, nil, common.GenerateJsonHeader(), data)
 		}
 	} else {
 		for _, i := range content {
+			sendCount := len(i.Alerts)
+			if sendCount > maxSendCount {
+				sendCount = maxSendCount
+			}
 			data, _ := json.Marshal(hookRequest{
 				Type:        t,
 				RuleId:      i.RuleId,
 				Time:        sendTime,
 				ConfirmLink: beego.AppConfig.String("WebUrl") + "/alerts_confirm/" + strconv.FormatInt(i.RuleId, 10) + "?start=" + strconv.FormatInt(i.Start, 10),
 				To:          i.User,
-				Alerts:      i.Alerts[:maxSendCount],
+				Alerts:      i.Alerts[:sendCount],
 			})
 			common.HttpPost(url, nil, common.GenerateJsonHeader(), data)
 		}

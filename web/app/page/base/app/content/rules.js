@@ -20,7 +20,7 @@ export default class Rules extends Component {
     dataSource: [],
     editModal: false,
     filterItem: {
-      summary: false,
+      alert: false,
       description: false,
       prom_id: false,
       plan_id: false,
@@ -180,57 +180,60 @@ export default class Rules extends Component {
   }
   render() {
     const { editModal, dataSource } = this.state;
+    const expandedRowRender = (record) => {
+      const columns = [
+        { dataIndex: "name", width: "10%" },
+        { dataIndex: "value" },
+      ];
+
+      const { labels } = record;
+      const labelList = Object.keys(labels || {}).map((key) => {
+        return (
+          <Tag color="blue" key={key}>
+            {key}={labels[key]}
+          </Tag>
+        );
+      });
+
+      let data = [];
+      data.push({
+        name: "标签",
+        value: labelList,
+      });
+      data.push({
+        name: "概要",
+        value: record.summary,
+      });
+      data.push({
+        name: "描述",
+        value: record.description,
+      });
+      data.push({
+        name: "表达式",
+        value: record.expr,
+      });
+
+      return (
+        <Table
+          columns={columns}
+          dataSource={data}
+          pagination={false}
+          showHeader={false}
+          bordered={true}
+          rowKey="name"
+        />
+      );
+    };
     const columns = [
       { title: "编号", align: "center", dataIndex: "id" },
-      {
-        title: "表达式",
-        align: "center",
-        width: "300px",
-        render: (text, record) => (
-          <code style={{ wordWrap: "break-word" }}>
-            {record.expr} {record.op} {record.value}
-          </code>
-        ),
-      },
-      { title: "持续时间", align: "center", dataIndex: "for" },
       {
         title: "标题",
         align: "center",
         dataIndex: "alert",
         ...this.getColumnSearchProps("alert"),
-        filterDropdownVisible: this.state.filterItem.summary,
+        filterDropdownVisible: this.state.filterItem.alert,
       },
-      {
-        title: "标签",
-        align: "center",
-        dataIndex: "labels",
-        render: (text, record) => {
-          const { labels } = record;
-          const labelList = [];
-          for (let k in labels) {
-            labelList.push(
-              <Tag key={k} color="blue">
-                {k}={labels[k]}
-              </Tag>
-            );
-          }
-          return <div>{labelList}</div>;
-        },
-      },
-      {
-        title: "概要",
-        align: "center",
-        dataIndex: "summary",
-        ...this.getColumnSearchProps("summary"),
-        filterDropdownVisible: this.state.filterItem.summary,
-      },
-      {
-        title: "描述",
-        align: "center",
-        dataIndex: "description",
-        ...this.getColumnSearchProps("description"),
-        filterDropdownVisible: this.state.filterItem.description,
-      },
+      { title: "持续时间", align: "center", dataIndex: "for" },
       {
         title: "数据源",
         align: "center",
@@ -292,7 +295,12 @@ export default class Rules extends Component {
           onClose={() => this.closeEditModal()}
           onSubmit={this.rulesUpdate}
         />
-        <Table dataSource={dataSource} columns={columns} rowKey="id" />
+        <Table
+          dataSource={dataSource}
+          columns={columns}
+          rowKey="id"
+          expandedRowRender={expandedRowRender}
+        />
       </div>
     );
   }

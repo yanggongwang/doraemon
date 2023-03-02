@@ -11,6 +11,8 @@ import (
 	//	"strconv"
 	//	"time"
 
+	"strings"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/plugins/cors"
@@ -20,32 +22,26 @@ import (
 )
 
 var FilterUser = func(ctx *context.Context) {
-	//fmt.Println(ctx.Input.Header("User-Agent"))
-	//timestamp, _ := strconv.ParseInt(ctx.Input.Header("Content-Time"), 10, 64)
-	//now := time.Now().UnixNano() / int64(time.Millisecond)
-	//delta := (now - timestamp) / 1000
-	//tmp := strconv.FormatInt(delta,10)
-	//if (delta < -60 || delta > 60) && (len(ctx.Request.RequestURI) < 27 || ctx.Request.RequestURI[:27] != "/api/v1/login/oauthcallback") {
-	//	_ = ctx.Output.JSON(common.Res{Code: -1, Msg: "Expired requests"}, false, false)
-	//}
-	//ctx.Output.JSON(struct {
-	//	Error string  `json:"error"`
-	//}{"invalid request"},false,false)
-	//fmt.Println(ctx.Request.Method)
 	req := ctx.Request
 	requestURI := req.RequestURI
 	method := req.Method
 
-	if ((method == "GET" && len(requestURI) >= 13 && (requestURI[:13] == "/api/v1/proms" || requestURI[:13] == "/api/v1/rules")) ||
-		(method == "POST" && len(requestURI) >= 14 && requestURI[:14] == "/api/v1/alerts")) &&
-		ctx.Input.Header("Token") == "96smhbNpRguoJOCEKNrMqQ" {
-		return
+	requestPath := strings.Split(requestURI, "?")[0]
+	token := beego.AppConfig.String("Token")
+
+	if ctx.Input.Header("Token") == token {
+		if method == "GET" && (strings.HasPrefix(requestPath, "/api/v1/rules") || strings.HasPrefix(requestPath, "/api/v1/proms")) {
+			return
+		} else if method == "POST" && (strings.HasPrefix(requestPath, "/api/v1/alerts") || strings.HasPrefix(requestPath, "/api/v1/sliences")) {
+			return
+		}
 	}
-	if len(requestURI) >= 14 && requestURI[:14] == "/api/v1/logout" {
+
+	if requestPath == "/api/v1/logout" {
 		return
 	}
 	username, _ := ctx.Input.Session("username").(string)
-	if username == "" && ctx.Request.RequestURI[:13] != "/api/v1/login" {
+	if username == "" && !strings.HasPrefix(requestPath, "/api/v1/login") {
 		_ = ctx.Output.JSON(common.Res{Code: -1, Msg: "Unauthorized"}, false, false)
 	}
 }
@@ -59,7 +55,7 @@ func init() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
-	// beego.InsertFilter("/api/v1/*", beego.BeforeRouter, FilterUser)
+	beego.InsertFilter("/api/v1/*", beego.BeforeRouter, FilterUser)
 
 	ns := beego.NewNamespace("/api/v1",
 		beego.NSNamespace("/login",

@@ -60,3 +60,5 @@ node_modules.rar
 
 #don't upload react.rar
 react.rar
+
+dist/

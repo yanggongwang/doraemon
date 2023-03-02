@@ -116,106 +116,138 @@ export default class Strategy extends Component {
         align: "center",
         dataIndex: "id",
         sorter: (a, b) => a.id - b.id,
+        width: 80,
       },
       {
         title: "Rule ID",
         align: "center",
         dataIndex: "rule_id",
         render: (ruleId) => <Link to={`/rules?id=${ruleId}`}>{ruleId}</Link>,
+        width: 80,
       },
-      { title: "报警值", align: "center", dataIndex: "value" },
+      { title: "报警值", align: "center", dataIndex: "value", width: 80 },
       {
         title: "当前状态",
         align: "center",
         dataIndex: "status",
-        render: (status) => (
-          <span>
-            {status === 2 ? "报警" : status === 0 ? "恢复" : "已确认"}
-          </span>
-        ),
+        width: 90,
+        render: (status) => {
+          let stTag;
+          if (status === 2) {
+            stTag = <Tag color="gold">报警</Tag>;
+          } else if (status === 0) {
+            stTag = <Tag color="green">恢复</Tag>;
+          } else {
+            stTag = <Tag color="#108ee9">已确认</Tag>;
+          }
+          return <span>{stTag}</span>;
+        },
       },
       {
         title: "异常分钟数",
         align: "center",
         dataIndex: "count",
+        width: 80,
         render: (count) => <span>{count + 1}</span>,
       },
-      { title: "标题", align: "center", dataIndex: "summary", width: 100 },
       {
-        title: "label",
+        title: "标题",
         align: "center",
-        dataIndex: "labels",
-        width: labalWidth,
-        render: (labels) => {
-          if (
-            labels &&
-            Object.prototype.toString.call(labels) === "[object Object]"
-          ) {
-            return Object.keys(labels).map((key) => (
-              <Tag color="cyan" style={{ marginTop: "5px" }}>
-                {key}: {labels[key]}
-              </Tag>
-            ));
-          }
-          return "-";
-        },
+        dataIndex: "labels.alertname",
+        width: 100,
+        render: (alertname) => <Tag color="#108ee9">{alertname}</Tag>,
       },
-      { title: "概览", align: "center", dataIndex: "summary" },
-      { title: "描述", align: "center", dataIndex: "description" },
-      { title: "确认人", align: "center", dataIndex: "confirmed_by" },
       {
-        title: "触发时间",
+        title: "开始时间",
         align: "center",
         dataIndex: "fired_at",
         width: tableTimeWidth,
         render: (firedAt) => (
           <span>
-            {firedAt === "0001-01-01T00:00:00Z"
-              ? "--"
-              : moment(firedAt).format("YYYY.MM.DD HH:mm:ss")}
+            <Tag color="#f50">
+              {firedAt === "0001-01-01T00:00:00Z"
+                ? "--"
+                : moment(firedAt).format("YYYY.MM.DD HH:mm:ss")}
+            </Tag>
           </span>
         ),
       },
       {
-        title: "确认时间",
-        align: "center",
-        dataIndex: "confirmed_at",
-        width: tableTimeWidth,
-        render: (confirmedAt) => (
-          <span>
-            {confirmedAt === "0001-01-01T00:00:00Z"
-              ? "--"
-              : moment(confirmedAt).format("YYYY.MM.DD HH:mm:ss")}
-          </span>
-        ),
-      },
-      {
-        title: "确认截止时间",
-        align: "center",
-        dataIndex: "confirmed_before",
-        width: tableTimeWidth,
-        render: (confirmedBefore) => (
-          <span>
-            {confirmedBefore === "0001-01-01T00:00:00Z"
-              ? "--"
-              : moment(confirmedBefore).format("YYYY.MM.DD HH:mm:ss")}
-          </span>
-        ),
-      },
-      {
-        title: "恢复时间",
+        title: "结束时间",
         align: "center",
         dataIndex: "resolved_at",
         width: tableTimeWidth,
         render: (resolvedAt) => (
           <span>
-            {resolvedAt === "0001-01-01T00:00:00Z"
-              ? "--"
-              : moment(resolvedAt).format("YYYY.MM.DD HH:mm:ss")}
+            <Tag color="#f50" style={{ margin: "10px" }}>
+              {resolvedAt === "0001-01-01T00:00:00Z"
+                ? "持续中"
+                : moment(resolvedAt).format("YYYY.MM.DD HH:mm:ss")}
+            </Tag>
           </span>
         ),
       },
     ];
+
+    const expandedRowRender = (record) => {
+      const { labels } = record;
+      const labelList = Object.keys(labels || {}).map((key) => {
+        return (
+          <Tag color="blue" key={key}>
+            {key}={labels[key]}
+          </Tag>
+        );
+      });
+
+      let data = [];
+      data.push({
+        name: "标签",
+        value: labelList,
+      });
+      data.push({
+        name: "概述",
+        value: record.summary,
+      });
+      data.push({
+        name: "描述",
+        value: record.description,
+      });
+      if (record.status === 1) {
+        data.push({
+          name: "确认人",
+          value: record.confirmed_by,
+        });
+        data.push({
+          name: "确认时间",
+          value: record.confirmed_at,
+        });
+        data.push({
+          name: "确认截止时间",
+          value: record.confirmed_before,
+        });
+      }
+
+      let columns = [
+        {
+          dataIndex: "name",
+          width: "10%",
+        },
+        {
+          dataIndex: "value",
+        },
+      ];
+
+      return (
+        <Table
+          columns={columns}
+          dataSource={data}
+          pagination={false}
+          bordered={true}
+          showHeader={false}
+          rowKey="name"
+        />
+      );
+    };
     return (
       <div>
         <Form layout="inline" onSubmit={this.handleSearch}>
@@ -281,9 +313,9 @@ export default class Strategy extends Component {
         </Form>
         <Table
           dataSource={dataSource}
+          expandedRowRender={expandedRowRender}
           columns={columns}
           pagination={false}
-          scroll={{ x: 1300 }}
           rowKey="id"
         />
         <div

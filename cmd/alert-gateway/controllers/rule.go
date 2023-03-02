@@ -27,8 +27,6 @@ func (c *RuleController) URLMapping() {
 type Rule struct {
 	Id          int64             `json:"id,omitempty"`
 	Expr        string            `json:"expr"`
-	Op          string            `json:"op"`
-	Value       string            `json:"value"`
 	For         string            `json:"for"`
 	Alert       string            `json:"alert"`
 	Labels      map[string]string `json:"labels,omitempty"`

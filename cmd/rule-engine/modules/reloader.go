@@ -134,7 +134,8 @@ func (r *Reloader) Update() error {
 // Loop for checking the rules
 func (r *Reloader) Loop() {
 	for r.running {
-		r.Update()
+		err := r.Update()
+		level.Error(r.logger).Log("msg", "update rule error", "error", err)
 
 		select {
 		case <-r.context.Done():
@@ -149,6 +150,7 @@ func (r *Reloader) getPromRules() ([]PromRules, error) {
 		Timeout: 10 * time.Second, // FIXME: timeout
 	}
 	url := fmt.Sprintf("%s%s", r.config.GatewayURL, r.config.GatewayPathRule)
+	fmt.Printf("url: %s\n", url)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("Token", r.config.AuthToken)
 	resp, err := client.Do(req)

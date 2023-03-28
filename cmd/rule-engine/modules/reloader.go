@@ -135,7 +135,9 @@ func (r *Reloader) Update() error {
 func (r *Reloader) Loop() {
 	for r.running {
 		err := r.Update()
-		level.Error(r.logger).Log("msg", "update rule error", "error", err)
+		if err != nil {
+			level.Error(r.logger).Log("msg", "update rule error", "error", err)
+		}
 
 		select {
 		case <-r.context.Done():
